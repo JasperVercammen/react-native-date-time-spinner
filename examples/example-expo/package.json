@@ -18,7 +18,7 @@
         "expo-linear-gradient": "^15.0.8",
         "react": "19.1.0",
         "react-native": "0.81.5",
-        "react-native-date-time-picker": "workspace:*"
+        "react-native-date-time-spinner": "workspace:*"
     },
     "private": true
 }

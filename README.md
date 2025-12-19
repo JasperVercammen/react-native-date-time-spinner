@@ -1,7 +1,7 @@
 # React Native Date Time Picker - Spinner 📅 ⏰
 
 ![platforms](https://img.shields.io/badge/platforms-Android%20%7C%20iOS-brightgreen.svg?style=for-the-badge&colorB=191A17)
-[![Version](https://img.shields.io/npm/v/react-native-date-time-picker.svg?style=for-the-badge)](https://www.npmjs.com/package/react-native-date-time-picker)
+[![Version](https://img.shields.io/npm/v/react-native-date-time-spinner.svg?style=for-the-badge)](https://www.npmjs.com/package/react-native-date-time-spinner)
 
 Lightweight, spinner-style picker for React Native and Expo. Supports **date** and **date-time** modes, custom formatting, min/max ranges, configurable column order, gradients, and custom separators.
 
@@ -24,9 +24,9 @@ Based on (and grateful to) [`react-native-timer-picker`](https://www.npmjs.com/p
 React Native >= 0.72, React >= 18.2.
 
 ```bash
-yarn add react-native-date-time-picker
+yarn add react-native-date-time-spinner
 # or
-npm install react-native-date-time-picker
+npm install react-native-date-time-spinner
 ```
 
 ## Quick start (date)
@@ -36,7 +36,7 @@ npm install react-native-date-time-picker
 ```tsx
 import React, { useState } from "react";
 import { View, Text } from "react-native";
-import { DateTimeSpinner } from "react-native-date-time-picker";
+import { DateTimeSpinner } from "react-native-date-time-spinner";
 
 export default function Example() {
     const [value, setValue] = useState(new Date(2025, 5, 15));
@@ -64,7 +64,7 @@ export default function Example() {
 ```tsx
 import React, { useState } from "react";
 import { View, Text } from "react-native";
-import { DateTimeSpinner } from "react-native-date-time-picker";
+import { DateTimeSpinner } from "react-native-date-time-spinner";
 import { format } from "date-fns";
 
 export default function Example() {
@@ -124,7 +124,7 @@ import React, { useState } from "react";
 import { format } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
 import { View, Text } from "react-native";
-import { DateTimeSpinner } from "react-native-date-time-picker";
+import { DateTimeSpinner } from "react-native-date-time-spinner";
 
 export default function Example() {
     const [value, setValue] = useState(new Date(2025, 5, 15));
@@ -176,7 +176,7 @@ export default function Example() {
 ```tsx
 import React, { useState } from "react";
 import { View, Text } from "react-native";
-import { DateTimeSpinner } from "react-native-date-time-picker";
+import { DateTimeSpinner } from "react-native-date-time-spinner";
 import { format } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
 

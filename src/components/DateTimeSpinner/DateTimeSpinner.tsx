@@ -945,7 +945,7 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
             <View
                 {...pickerContainerProps}
                 style={styles.pickerContainer}
-                testID="date-picker">
+                testID="date-spinner">
                 {columns}
             </View>
         );

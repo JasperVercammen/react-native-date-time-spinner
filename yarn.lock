@@ -6462,7 +6462,7 @@ __metadata:
     "@react-native/typescript-config": "npm:0.79.2"
     react: "npm:19.0.0"
     react-native: "npm:0.79.2"
-    react-native-date-time-picker: "workspace:*"
+    react-native-date-time-spinner: "workspace:*"
   languageName: unknown
   linkType: soft
 
@@ -6477,7 +6477,7 @@ __metadata:
     expo-linear-gradient: "npm:^15.0.8"
     react: "npm:19.1.0"
     react-native: "npm:0.81.5"
-    react-native-date-time-picker: "workspace:*"
+    react-native-date-time-spinner: "workspace:*"
   languageName: unknown
   linkType: soft
 
@@ -11523,9 +11523,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-date-time-picker@workspace:*, react-native-date-time-picker@workspace:.":
+"react-native-date-time-spinner@workspace:*, react-native-date-time-spinner@workspace:.":
   version: 0.0.0-use.local
-  resolution: "react-native-date-time-picker@workspace:."
+  resolution: "react-native-date-time-spinner@workspace:."
   dependencies:
     "@babel/core": "npm:^7.20.0"
     "@testing-library/react-native": "npm:^12.0.0"

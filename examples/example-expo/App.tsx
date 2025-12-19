@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import { format, subYears } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
 import { ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
-import { DateTimeSpinner } from "react-native-date-time-picker";
-import type { CustomDateTimeSpinnerStyles } from "react-native-date-time-picker";
+import { DateTimeSpinner } from "react-native-date-time-spinner";
+import type { CustomDateTimeSpinnerStyles } from "react-native-date-time-spinner";
 
 const minDate = new Date(2020, 0, 1);
 const maxDate = new Date(2030, 11, 31);

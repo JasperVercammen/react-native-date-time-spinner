@@ -9,7 +9,7 @@ describe("DatePicker", () => {
     it("renders day, month and year columns", () => {
         const { getByTestId } = render(<DatePicker />);
 
-        expect(getByTestId("date-picker")).toBeDefined();
+        expect(getByTestId("date-spinner")).toBeDefined();
         expect(getByTestId("duration-scroll-day")).toBeDefined();
         expect(getByTestId("duration-scroll-month")).toBeDefined();
         expect(getByTestId("duration-scroll-year")).toBeDefined();
@@ -30,6 +30,6 @@ describe("DatePicker", () => {
             />
         );
 
-        expect(getByTestId("date-picker")).toBeDefined();
+        expect(getByTestId("date-spinner")).toBeDefined();
     });
 });
