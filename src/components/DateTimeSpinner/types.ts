@@ -4,9 +4,9 @@ import type { View } from "react-native";
 
 import type { LinearGradientProps } from "../DurationScroll/types";
 
-import type { CustomDateTimePickerStyles } from "./styles";
+import type { CustomDateTimeSpinnerStyles } from "./styles";
 
-export type DateTimePickerValue = {
+export type DateTimeSpinnerValue = {
     date: Date;
     day: number;
     hour: number;
@@ -15,8 +15,8 @@ export type DateTimePickerValue = {
     year: number;
 };
 
-export interface DateTimePickerRef {
-    latestValue: RefObject<DateTimePickerValue>;
+export interface DateTimeSpinnerRef {
+    latestValue: RefObject<DateTimeSpinnerValue>;
     reset: (options?: { animated?: boolean }) => void;
     setValue: (
         value:
@@ -32,7 +32,7 @@ export interface DateTimePickerRef {
     ) => void;
 }
 
-export type DateTimePickerProps = {
+export type DateTimeSpinnerProps = {
     LinearGradient?: any;
     MaskedView?: any;
     allowFontScaling?: boolean;
@@ -59,7 +59,7 @@ export type DateTimePickerProps = {
     maxDate?: Date;
     minDate?: Date;
     mode?: "date" | "datetime";
-    onDateChange?: (value: DateTimePickerValue) => void;
+    onDateChange?: (value: DateTimeSpinnerValue) => void;
     padDayWithZero?: boolean;
     padHourWithZero?: boolean;
     padMinuteWithZero?: boolean;
@@ -69,6 +69,6 @@ export type DateTimePickerProps = {
     pickerFeedback?: () => void | Promise<void>;
     pickerGradientOverlayProps?: Partial<LinearGradientProps>;
     repeatNumbersNTimes?: number;
-    styles?: CustomDateTimePickerStyles;
+    styles?: CustomDateTimeSpinnerStyles;
     timeSeparator?: string;
 };

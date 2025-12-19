@@ -2,8 +2,8 @@ import React from "react";
 
 import { render } from "@testing-library/react-native";
 
+import type { generateStyles } from "../components/DateTimeSpinner/styles";
 import DurationScroll from "../components/DurationScroll";
-import type { generateStyles } from "../components/DateTimePicker/styles";
 
 describe("DurationScroll", () => {
     const onDurationChangeMock = jest.fn();
@@ -70,7 +70,6 @@ describe("DurationScroll", () => {
         const { getByText } = render(
             <DurationScroll
                 interval={1}
-                label="Duration"
                 maximumValue={59}
                 onDurationChange={onDurationChangeMock}
                 padWithNItems={1}

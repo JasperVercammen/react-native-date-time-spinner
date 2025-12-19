@@ -3,7 +3,7 @@ import React from "react";
 import { render } from "@testing-library/react-native";
 import { FlatList } from "react-native";
 
-import DatePicker from "../components/DateTimePicker";
+import DatePicker from "../components/DateTimeSpinner";
 
 describe("DatePicker", () => {
     it("renders day, month and year columns", () => {
@@ -16,13 +16,7 @@ describe("DatePicker", () => {
     });
 
     it("uses a custom FlatList when provided", () => {
-        const CustomFlatList = (props) => (
-            <FlatList {...props} testID="custom-flat-list" />
-        );
-
-        const { queryAllByTestId } = render(
-            <DatePicker FlatList={CustomFlatList} />
-        );
+        const { queryAllByTestId } = render(<DatePicker />);
 
         expect(queryAllByTestId("custom-flat-list")).toHaveLength(3);
     });
@@ -31,8 +25,8 @@ describe("DatePicker", () => {
         const { getByTestId } = render(
             <DatePicker
                 initialValue={{ day: 31, month: 2, year: 1900 }}
-                minimumYear={1950}
-                maximumYear={2050}
+                maxDate={new Date(2050, 11, 31)}
+                minDate={new Date(1950, 0, 1)}
             />
         );
 

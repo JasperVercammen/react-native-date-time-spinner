@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import { format, subYears } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
 import { ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
-import { DateTimePicker } from "react-native-date-time-picker";
-import type { CustomDateTimePickerStyles } from "react-native-date-time-picker";
+import { DateTimeSpinner } from "react-native-date-time-picker";
+import type { CustomDateTimeSpinnerStyles } from "react-native-date-time-picker";
 
 const minDate = new Date(2020, 0, 1);
 const maxDate = new Date(2030, 11, 31);
@@ -33,7 +33,7 @@ export default function App() {
                     <Text style={styles.label}>Simple</Text>
                     <Text style={styles.value}>{formatDate(selectedDate)}</Text>
                     <View style={styles.pickerContainer}>
-                        <DateTimePicker
+                        <DateTimeSpinner
                             disableInfiniteScroll={true}
                             formatDateToParts={(date) => ({
                                 day: format(date, "dd"),
@@ -60,7 +60,7 @@ export default function App() {
                         {format(selectedDateTime, "PP p")}
                     </Text>
                     <View style={styles.pickerContainer}>
-                        <DateTimePicker
+                        <DateTimeSpinner
                             dateTimeOrder={["date", "hour", "minute"]}
                             formatDateLabel={(date) =>
                                 format(date, "eee, MMM d")
@@ -87,7 +87,7 @@ export default function App() {
                         <Text style={styles.value}>
                             {formatDate(boundedDate)}
                         </Text>
-                        <DateTimePicker
+                        <DateTimeSpinner
                             initialValue={boundedDate}
                             maxDate={maxDate}
                             minDate={minDate}
@@ -110,7 +110,7 @@ export default function App() {
                         <Text style={styles.value}>
                             {format(boundedDate, "do MMM yyyy")}
                         </Text>
-                        <DateTimePicker
+                        <DateTimeSpinner
                             columnOrder={["month", "day", "year"]}
                             formatDateToParts={(date) => ({
                                 day: format(date, "do"),
@@ -133,7 +133,7 @@ export default function App() {
     );
 }
 
-export const datePickerStyles: CustomDateTimePickerStyles = {
+export const datePickerStyles: CustomDateTimeSpinnerStyles = {
     pickerContainer: {
         marginLeft: 0,
         marginRight: 0,

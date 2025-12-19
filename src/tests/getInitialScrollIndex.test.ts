@@ -255,4 +255,3 @@ describe("getInitialScrollIndex", () => {
             expect(result).toBe(19); // 12 * 1 + 7 = 19
         });
     });
-});

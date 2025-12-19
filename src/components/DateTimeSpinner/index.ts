@@ -1,4 +1,4 @@
-export { default } from "./DateTimePicker";
+export { default } from "./DateTimeSpinner";
 
 export * from "./types";
 

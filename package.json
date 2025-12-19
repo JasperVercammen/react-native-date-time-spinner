@@ -1,5 +1,5 @@
 {
-    "name": "react-native-date-time-picker",
+    "name": "react-native-date-time-spinner",
     "description": "A simple, flexible, performant spinner-based date and time picker for React Native apps. Pick day, month, and year with a native-feeling scroll experience.",
     "author": {
         "name": "Jasper Vercammen",

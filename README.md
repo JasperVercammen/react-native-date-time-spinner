@@ -10,6 +10,7 @@ Full Javascript, no linking required
 Based on (and grateful to) [`react-native-timer-picker`](https://www.npmjs.com/package/react-native-timer-picker).
 
 ## Demos 📱
+
 <p>
     <img src="demos/example_1.gif" width="250"  style="margin-right:50px" />
     <img src="demos/example_4.gif" width="250"  style="margin-right:50px" />
@@ -29,12 +30,13 @@ npm install react-native-date-time-picker
 ```
 
 ## Quick start (date)
+
 <p><img src="demos/example_1.gif" width="250"  style="margin-right:50px" /></p>
 
 ```tsx
 import React, { useState } from "react";
 import { View, Text } from "react-native";
-import { DateTimePicker } from "react-native-date-time-picker";
+import { DateTimeSpinner } from "react-native-date-time-picker";
 
 export default function Example() {
     const [value, setValue] = useState(new Date(2025, 5, 15));
@@ -42,7 +44,7 @@ export default function Example() {
     return (
         <View style={{ padding: 16 }}>
             <Text>{value.toDateString()}</Text>
-            <DateTimePicker
+            <DateTimeSpinner
                 initialValue={value}
                 minDate={new Date(2020, 0, 1)}
                 maxDate={new Date(2030, 11, 31)}
@@ -56,12 +58,13 @@ export default function Example() {
 ```
 
 ## Date-time mode (date + hour + minute) and gradient overlay
+
 <p><img src="demos/example_2.gif" width="250"  style="margin-right:50px" /></p>
 
 ```tsx
 import React, { useState } from "react";
 import { View, Text } from "react-native";
-import { DateTimePicker } from "react-native-date-time-picker";
+import { DateTimeSpinner } from "react-native-date-time-picker";
 import { format } from "date-fns";
 
 export default function Example() {
@@ -71,7 +74,7 @@ export default function Example() {
         <View style={{ padding: 16 }}>
             <Text>{value.toDateString()}</Text>
 
-            <DateTimePicker
+            <DateTimeSpinner
                 mode="datetime"
                 dateTimeOrder={["date", "hour", "minute"]}
                 dateTimeSpacing={16}
@@ -92,13 +95,14 @@ export default function Example() {
 ```
 
 ## Month/day/year swap with formatted labels
+
 <p><img src="demos/example_4.gif" width="250"  style="margin-right:50px" /></p>
 
 ```tsx
 import { format } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
 
-<DateTimePicker
+<DateTimeSpinner
     columnOrder={["year", "month", "day"]}
     formatDateToParts={(date) => ({
         day: format(date, "do"),
@@ -111,6 +115,7 @@ import { LinearGradient } from "expo-linear-gradient";
 ```
 
 ## Example with selected line and non-infinite scrolling
+
 <p><img src="demos/example_5.gif" width="250"  style="margin-right:50px" /></p>
 
 ```tsx
@@ -119,7 +124,7 @@ import React, { useState } from "react";
 import { format } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
 import { View, Text } from "react-native";
-import { DateTimePicker } from "react-native-date-time-picker";
+import { DateTimeSpinner } from "react-native-date-time-picker";
 
 export default function Example() {
     const [value, setValue] = useState(new Date(2025, 5, 15));
@@ -132,7 +137,7 @@ export default function Example() {
                     alignItems: "center",
                     justifyContent: "center",
                 }}>
-                <DateTimePicker
+                <DateTimeSpinner
                     disableInfiniteScroll={true}
                     formatDateToParts={(date) => ({
                         day: format(date, "dd"),
@@ -165,12 +170,13 @@ export default function Example() {
 ```
 
 ## Extended example (datetime with spacing, separator, gradient mask)
+
 <p><img src="demos/example_3.gif" width="250"  style="margin-right:50px" /></p>
 
 ```tsx
 import React, { useState } from "react";
 import { View, Text } from "react-native";
-import { DateTimePicker } from "react-native-date-time-picker";
+import { DateTimeSpinner } from "react-native-date-time-picker";
 import { format } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -180,7 +186,7 @@ export default function Example() {
     return (
         <View style={{ padding: 20 }}>
             <Text style={{ marginBottom: 8 }}>{format(value, "PPpp")}</Text>
-            <DateTimePicker
+            <DateTimeSpinner
                 mode="datetime"
                 dateTimeOrder={["date", "hour", "minute"]}
                 dateTimeSpacing={16}
@@ -242,7 +248,7 @@ export default function Example() {
 | `pickerGradientOverlayProps` | `Partial<LinearGradientProps>`                              | `undefined`                | Props forwarded to the gradient overlay.                                       |
 | `LinearGradient`             | `any`                                                       | `undefined`                | Gradient component (e.g., from `expo-linear-gradient`).                        |
 | `MaskedView`                 | `any`                                                       | `undefined`                | Mask component to apply gradient as a mask.                                    |
-| `styles`                     | `CustomDateTimePickerStyles`                                | `undefined`                | Style overrides (see below).                                                   |
+| `styles`                     | `CustomDateTimeSpinnerStyles`                               | `undefined`                | Style overrides (see below).                                                   |
 | `pickerContainerProps`       | `View` props                                                | `undefined`                | Extra props for outer container.                                               |
 
 ## Styling

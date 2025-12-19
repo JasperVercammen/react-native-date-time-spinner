@@ -3,7 +3,7 @@ import type { RefObject } from "react";
 
 import type { View } from "react-native";
 
-import type { generateStyles } from "../DateTimePicker/styles";
+import type { generateStyles } from "../DateTimeSpinner/styles";
 
 export interface DurationScrollProps {
     FlatList?: any;

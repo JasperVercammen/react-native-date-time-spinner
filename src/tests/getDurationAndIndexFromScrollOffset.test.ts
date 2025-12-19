@@ -192,4 +192,3 @@ describe("getDurationAndIndexFromScrollOffset", () => {
             expect(result).toEqual({ duration: 20, index: 20 });
         });
     });
-});

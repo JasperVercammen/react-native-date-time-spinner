@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
 import type { TextStyle, ViewStyle } from "react-native";
 
-export type CustomDateTimePickerStyles = {
+export type CustomDateTimeSpinnerStyles = {
     backgroundColor?: string;
     dateTimeSpacer?: ViewStyle;
     disabledPickerContainer?: ViewStyle;
@@ -27,7 +27,7 @@ const LIGHT_MODE_BACKGROUND_COLOR = "#FFFFFF";
 const LIGHT_MODE_TEXT_COLOR = "#1B1B1B";
 
 export const generateStyles = (
-    customStyles: CustomDateTimePickerStyles | undefined
+    customStyles: CustomDateTimeSpinnerStyles | undefined
 ) =>
     StyleSheet.create({
         pickerContainer: {

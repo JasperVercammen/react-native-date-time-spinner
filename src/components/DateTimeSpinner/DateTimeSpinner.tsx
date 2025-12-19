@@ -20,9 +20,9 @@ import DurationScroll from "../DurationScroll";
 import type { DurationScrollRef } from "../DurationScroll";
 
 import { generateStyles } from "./styles";
-import type { DateTimePickerProps, DateTimePickerRef } from "./types";
+import type { DateTimeSpinnerProps, DateTimeSpinnerRef } from "./types";
 
-const DateTimePicker = forwardRef<DateTimePickerRef, DateTimePickerProps>(
+const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
     (props, ref) => {
         const {
             allowFontScaling = false,
@@ -201,7 +201,7 @@ const DateTimePicker = forwardRef<DateTimePickerRef, DateTimePickerProps>(
         );
 
         const onDateChangeRef =
-            useRef<DateTimePickerProps["onDateChange"]>(onDateChange);
+            useRef<DateTimeSpinnerProps["onDateChange"]>(onDateChange);
 
         useEffect(() => {
             onDateChangeRef.current = onDateChange;
@@ -952,4 +952,4 @@ const DateTimePicker = forwardRef<DateTimePickerRef, DateTimePickerProps>(
     }
 );
 
-export default React.memo(DateTimePicker);
+export default React.memo(DateTimeSpinner);

@@ -1,6 +1,6 @@
 export {
-    default as DateTimePicker,
-    DateTimePickerProps,
-    DateTimePickerRef,
-    CustomDateTimePickerStyles,
-} from "./components/DateTimePicker";
+    default as DateTimeSpinner,
+    DateTimeSpinnerProps,
+    DateTimeSpinnerRef,
+    CustomDateTimeSpinnerStyles,
+} from "./components/DateTimeSpinner";
