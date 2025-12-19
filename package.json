@@ -11,6 +11,13 @@
     "module": "dist/module/index.js",
     "types": "dist/typescript/index.d.ts",
     "typings": "dist/typescript/index.d.ts",
+    "files": [
+        "dist/",
+        "src/index.ts",
+        "react-native.config.js",
+        "README.md",
+        "LICENSE"
+    ],
     "packageManager": "yarn@4.11.0",
     "workspaces": {
         "packages": [
