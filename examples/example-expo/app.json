@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Timer Picker Example",
-    "slug": "timer-picker-example",
+    "name": "Date Picker Example",
+    "slug": "date-picker-example",
     "version": "1.0.0",
     "icon": "./assets/icon.png",
     "newArchEnabled": true,
@@ -14,7 +14,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.nuumi.datepickerexample"
     },
     "android": {
       "adaptiveIcon": {
@@ -22,7 +23,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.nuumi.timerpickerexample"
+      "package": "com.nuumi.datepickerexample"
     },
     "web": {
       "favicon": "./assets/favicon.png"

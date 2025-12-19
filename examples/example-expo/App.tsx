@@ -1,530 +1,221 @@
-import React, {
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from "react";
+import React, { useState } from "react";
 
-import Ionicons from "@expo/vector-icons/Ionicons";
-import MaskedView from "@react-native-masked-view/masked-view";
-import * as Haptics from "expo-haptics";
+import { format, subYears } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
-import {
-    LayoutAnimation,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    UIManager,
-    View,
-    useWindowDimensions,
-} from "react-native";
-import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
-// import { AudioContext, type AudioBuffer } from "react-native-audio-api";
+import { ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
+import { DateTimePicker } from "react-native-date-time-picker";
+import type { CustomDateTimePickerStyles } from "react-native-date-time-picker";
 
-import { TimerPicker, TimerPickerModal } from "../../src";
+const minDate = new Date(2020, 0, 1);
+const maxDate = new Date(2030, 11, 31);
 
-import { CustomButton } from "./components/CustomButton";
-import { formatTime } from "./utils/formatTime";
-// import { getClickSound } from "./utils/getClickSound";
-
-if (Platform.OS === "android") {
-    UIManager.setLayoutAnimationEnabledExperimental?.(true);
-}
+const formatDate = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+};
 
 export default function App() {
-    const { width: screenWidth } = useWindowDimensions();
-
-    const scrollViewRef = useRef<ScrollView>(null);
-    // const audioContextRef = useRef<AudioContext | null>(null);
-    // const audioBufferRef = useRef<AudioBuffer | null>(null);
-
-    const [currentPageIndex, setCurrentPageIndex] = useState(0);
-    const [showPickerExample1, setShowPickerExample1] = useState(false);
-    const [showPickerExample2, setShowPickerExample2] = useState(false);
-    const [showPickerExample3, setShowPickerExample3] = useState(false);
-    const [alarmStringExample1, setAlarmStringExample1] = useState<
-        string | null
-    >(null);
-    const [alarmStringExample2, setAlarmStringExample2] = useState<
-        string | null
-    >(null);
-    const [alarmStringExample3, setAlarmStringExample3] =
-        useState<string>("00:00:00");
-
-    // N.B. Uncomment this to use audio (requires development build)
-    // useEffect(() => {
-    //     const setupAudio = async () => {
-    //         try {
-    //             const context = new AudioContext();
-    //             const arrayBuffer = await getClickSound();
-    //             const buffer = await context.decodeAudioData(arrayBuffer);
-
-    //             audioContextRef.current = context;
-    //             audioBufferRef.current = buffer;
-    //         } catch (error) {
-    //             console.warn("Audio setup failed:", error);
-    //         }
-    //     };
-
-    //     setupAudio();
-
-    //     return () => {
-    //         audioContextRef.current?.close();
-    //     };
-    // }, []);
-
-    useEffect(() => {
-        // when changing to landscape mode, scroll to the nearest page index
-        scrollViewRef.current?.scrollTo({
-            x: screenWidth * currentPageIndex,
-            animated: false,
-        });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [screenWidth]);
-
-    const onMomentumScrollEnd = useCallback(
-        (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-            LayoutAnimation.configureNext(
-                LayoutAnimation.Presets.easeInEaseOut
-            );
-            const { contentOffset } = event.nativeEvent;
-            const newPageIndex = Math.round(contentOffset.x / screenWidth) as
-                | 0
-                | 1;
-            setCurrentPageIndex(newPageIndex);
-        },
-        [screenWidth]
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [boundedDate, setBoundedDate] = useState(new Date(2024, 5, 15));
+    const [selectedDateTime, setSelectedDateTime] = useState(
+        new Date(2004, 5, 15, 14, 30)
     );
 
-    const pickerFeedback = useCallback(() => {
-        try {
-            Haptics.selectionAsync();
-
-            // const context = audioContextRef.current;
-            // const buffer = audioBufferRef.current;
-
-            // if (!context || !buffer) {
-            //     console.warn("Audio not initialized");
-            //     return;
-            // }
-
-            // const playerNode = context.createBufferSource();
-            // playerNode.buffer = buffer;
-            // playerNode.connect(context.destination);
-            // playerNode.start(context.currentTime);
-        } catch (error) {
-            console.warn("Picker feedback failed:", error);
-        }
-    }, []);
-
-    const renderExample1 = useMemo(() => {
-        return (
-            <View
-                style={[
-                    styles.container,
-                    styles.page1Container,
-                    { width: screenWidth },
-                ]}>
-                <Text style={styles.textDark}>
-                    {alarmStringExample1 !== null
-                        ? "Alarm set for"
-                        : "No alarm set"}
-                </Text>
-                <TouchableOpacity
-                    activeOpacity={0.7}
-                    onPress={() => setShowPickerExample1(true)}>
-                    <View style={styles.touchableContainer}>
-                        {alarmStringExample1 !== null ? (
-                            <Text style={styles.alarmTextDark}>
-                                {alarmStringExample1}
-                            </Text>
-                        ) : null}
-                        <TouchableOpacity
-                            activeOpacity={0.7}
-                            onPress={() => setShowPickerExample1(true)}>
-                            <View style={styles.buttonContainer}>
-                                <Text
-                                    style={[styles.button, styles.buttonDark]}>
-                                    {"Set Alarm 🔔"}
-                                </Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                </TouchableOpacity>
-                <TimerPickerModal
-                    closeOnOverlayPress
-                    LinearGradient={LinearGradient}
-                    modalProps={{
-                        overlayOpacity: 0.2,
-                    }}
-                    modalTitle="Set Alarm"
-                    onCancel={() => setShowPickerExample1(false)}
-                    onConfirm={(pickedDuration) => {
-                        setAlarmStringExample1(formatTime(pickedDuration));
-                        setShowPickerExample1(false);
-                    }}
-                    pickerFeedback={pickerFeedback}
-                    setIsVisible={setShowPickerExample1}
-                    styles={{
-                        theme: "dark",
-                    }}
-                    visible={showPickerExample1}
-                />
-            </View>
-        );
-    }, [alarmStringExample1, pickerFeedback, screenWidth, showPickerExample1]);
-
-    const renderExample2 = useMemo(() => {
-        return (
-            <View
-                style={[
-                    styles.container,
-                    styles.page2Container,
-                    { width: screenWidth },
-                ]}>
-                <Text style={styles.textLight}>
-                    {alarmStringExample2 !== null
-                        ? "Alarm set for"
-                        : "No alarm set"}
-                </Text>
-                <TouchableOpacity
-                    activeOpacity={0.7}
-                    onPress={() => setShowPickerExample2(true)}>
-                    <View style={styles.touchableContainer}>
-                        {alarmStringExample2 !== null ? (
-                            <Text style={styles.alarmTextLight}>
-                                {alarmStringExample2}
-                            </Text>
-                        ) : null}
-                        <TouchableOpacity
-                            activeOpacity={0.7}
-                            onPress={() => setShowPickerExample2(true)}>
-                            <View style={styles.buttonContainer}>
-                                <Text
-                                    style={[styles.button, styles.buttonLight]}>
-                                    {"Set Alarm 🔔"}
-                                </Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                </TouchableOpacity>
-                <TimerPickerModal
-                    closeOnOverlayPress
-                    LinearGradient={LinearGradient}
-                    modalTitle="Set Alarm"
-                    onCancel={() => setShowPickerExample2(false)}
-                    onConfirm={(pickedDuration) => {
-                        setAlarmStringExample2(formatTime(pickedDuration));
-                        setShowPickerExample2(false);
-                    }}
-                    pickerFeedback={pickerFeedback}
-                    setIsVisible={setShowPickerExample2}
-                    styles={{
-                        theme: "light",
-                    }}
-                    use12HourPicker
-                    visible={showPickerExample2}
-                />
-            </View>
-        );
-    }, [alarmStringExample2, pickerFeedback, screenWidth, showPickerExample2]);
-
-    const renderExample3 = useMemo(() => {
-        return (
-            <View
-                style={[
-                    styles.container,
-                    styles.page3Container,
-                    { width: screenWidth },
-                ]}>
-                <Text style={styles.textLight}>
-                    {alarmStringExample3 !== null
-                        ? "Alarm set for"
-                        : "No alarm set"}
-                </Text>
-                <TouchableOpacity
-                    activeOpacity={0.7}
-                    onPress={() => setShowPickerExample3(true)}>
-                    <View style={styles.touchableContainer}>
-                        {alarmStringExample3 !== null ? (
-                            <Text style={styles.alarmTextLight}>
-                                {alarmStringExample3}
-                            </Text>
-                        ) : null}
-                        <TouchableOpacity
-                            activeOpacity={0.7}
-                            onPress={() => setShowPickerExample3(true)}>
-                            <View style={styles.buttonContainer}>
-                                <Text
-                                    style={[styles.button, styles.buttonLight]}>
-                                    {"Set Alarm 🔔"}
-                                </Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                </TouchableOpacity>
-                <TimerPickerModal
-                    cancelButton={<CustomButton label="Cancel" />}
-                    closeOnOverlayPress
-                    confirmButton={<CustomButton label="Confirm" />}
-                    LinearGradient={LinearGradient}
-                    modalProps={{
-                        overlayOpacity: 0.2,
-                    }}
-                    modalTitle="Set Alarm"
-                    onCancel={() => setShowPickerExample3(false)}
-                    onConfirm={(pickedDuration) => {
-                        setAlarmStringExample3(formatTime(pickedDuration));
-                        setShowPickerExample3(false);
-                    }}
-                    pickerFeedback={pickerFeedback}
-                    setIsVisible={setShowPickerExample3}
-                    styles={{
-                        theme: "dark",
-                    }}
-                    visible={showPickerExample3}
-                />
-            </View>
-        );
-    }, [alarmStringExample3, pickerFeedback, screenWidth, showPickerExample3]);
-
-    const renderExample4 = useMemo(() => {
-        return (
-            <LinearGradient
-                colors={["#202020", "#220578"]}
-                end={{ x: 1, y: 1 }}
-                start={{ x: 0, y: 0 }}
-                style={[
-                    styles.container,
-                    styles.page4Container,
-                    { width: screenWidth },
-                ]}>
-                <TimerPicker
-                    hourLabel=":"
-                    LinearGradient={LinearGradient}
-                    MaskedView={MaskedView}
-                    minuteLabel=":"
-                    padWithNItems={2}
-                    pickerFeedback={pickerFeedback}
-                    secondLabel=""
-                    styles={{
-                        theme: "dark",
-                        backgroundColor: "transparent",
-                        pickerItem: {
-                            fontSize: 34,
-                        },
-                        pickerLabel: {
-                            fontSize: 32,
-                            marginTop: 0,
-                        },
-                        pickerContainer: {
-                            marginRight: 6,
-                        },
-                        pickerItemContainer: {
-                            width: 100,
-                        },
-                        pickerLabelContainer: {
-                            right: -20,
-                            top: 0,
-                            bottom: 6,
-                            width: 46,
-                            alignItems: "center",
-                        },
-                    }}
-                />
-            </LinearGradient>
-        );
-    }, [pickerFeedback, screenWidth]);
-
-    const renderExample5 = useMemo(() => {
-        return (
-            <View
-                style={[
-                    styles.container,
-                    styles.page5Container,
-                    { width: screenWidth },
-                ]}>
-                <TimerPicker
-                    hideHours
-                    LinearGradient={LinearGradient}
-                    minuteLabel="min"
-                    padWithNItems={3}
-                    pickerFeedback={pickerFeedback}
-                    secondLabel="sec"
-                    styles={{
-                        theme: "light",
-                        pickerItem: {
-                            fontSize: 34,
-                        },
-                        pickerLabel: {
-                            fontSize: 26,
-                            right: -20,
-                        },
-                        pickerLabelContainer: {
-                            width: 60,
-                        },
-                        pickerItemContainer: {
-                            width: 150,
-                        },
-                    }}
-                />
-            </View>
-        );
-    }, [pickerFeedback, screenWidth]);
-
-    const renderNavigationArrows = useMemo(() => {
-        return (
-            <>
-                {currentPageIndex !== 4 ? (
-                    <Pressable
-                        onPress={() => {
-                            LayoutAnimation.configureNext(
-                                LayoutAnimation.Presets.easeInEaseOut
-                            );
-                            setCurrentPageIndex((currentPageIndex) => {
-                                scrollViewRef.current?.scrollTo({
-                                    x: screenWidth * (currentPageIndex + 1),
-                                    animated: true,
-                                });
-                                return currentPageIndex + 1;
-                            });
-                        }}
-                        style={({ pressed }) => [
-                            styles.chevronPressable,
-                            { right: 8 },
-                            pressed && styles.chevronPressable_pressed,
-                        ]}>
-                        <Ionicons
-                            color={
-                                currentPageIndex % 2 !== 0
-                                    ? "#514242"
-                                    : "#F1F1F1"
-                            }
-                            name="chevron-forward"
-                            size={32}
-                        />
-                    </Pressable>
-                ) : null}
-                {currentPageIndex !== 0 ? (
-                    <Pressable
-                        onPress={() => {
-                            LayoutAnimation.configureNext(
-                                LayoutAnimation.Presets.easeInEaseOut
-                            );
-                            setCurrentPageIndex((currentPageIndex) => {
-                                scrollViewRef.current?.scrollTo({
-                                    x: screenWidth * (currentPageIndex - 1),
-                                    animated: true,
-                                });
-                                return currentPageIndex - 1;
-                            });
-                        }}
-                        style={({ pressed }) => [
-                            styles.chevronPressable,
-                            { left: 8 },
-                            pressed && styles.chevronPressable_pressed,
-                        ]}>
-                        <Ionicons
-                            color={
-                                currentPageIndex % 2 !== 0
-                                    ? "#514242"
-                                    : "#F1F1F1"
-                            }
-                            name="chevron-back"
-                            size={32}
-                        />
-                    </Pressable>
-                ) : null}
-            </>
-        );
-    }, [currentPageIndex, screenWidth]);
-
     return (
-        <>
-            <ScrollView
-                ref={scrollViewRef}
-                horizontal
-                onMomentumScrollEnd={onMomentumScrollEnd}
-                pagingEnabled>
-                {renderExample1}
-                {renderExample2}
-                {renderExample3}
-                {renderExample4}
-                {renderExample5}
-            </ScrollView>
-            {renderNavigationArrows}
-        </>
+        <ScrollView style={styles.safeArea}>
+            <StatusBar barStyle="dark-content" />
+            <View style={styles.container}>
+                <Text style={styles.title}>Spinner Date Picker</Text>
+
+                <View style={styles.section}>
+                    <Text style={styles.label}>Simple</Text>
+                    <Text style={styles.value}>{formatDate(selectedDate)}</Text>
+                    <View style={styles.pickerContainer}>
+                        <DateTimePicker
+                            disableInfiniteScroll={true}
+                            formatDateToParts={(date) => ({
+                                day: format(date, "dd"),
+                                month: format(date, "MMMM"),
+                                year: format(date, "yyyy"),
+                            })}
+                            initialValue={selectedDate}
+                            LinearGradient={LinearGradient}
+                            maxDate={subYears(new Date(), 18)}
+                            onDateChange={({ date }) => setSelectedDate(date)}
+                            pickerGradientOverlayProps={{
+                                locations: [0, 0.5, 0.5, 1],
+                            }}
+                            repeatNumbersNTimes={1}
+                            styles={datePickerStyles}
+                        />
+                        <View accessible={false} style={styles.selected}></View>
+                    </View>
+                </View>
+
+                <View style={styles.section}>
+                    <Text style={styles.label}>Date + time</Text>
+                    <Text style={styles.value}>
+                        {format(selectedDateTime, "PP p")}
+                    </Text>
+                    <View style={styles.pickerContainer}>
+                        <DateTimePicker
+                            dateTimeOrder={["date", "hour", "minute"]}
+                            formatDateLabel={(date) =>
+                                format(date, "eee, MMM d")
+                            }
+                            initialValue={selectedDateTime}
+                            maxDate={maxDate}
+                            minDate={minDate}
+                            mode="datetime"
+                            onDateChange={({ date }) =>
+                                setSelectedDateTime(date)
+                            }
+                            padHourWithZero
+                            padMinuteWithZero
+                            styles={{
+                                pickerItem: styles.pickerItem,
+                                pickerLabel: styles.pickerLabel,
+                            }}
+                        />
+                        <View accessible={false} style={styles.selected}></View>
+                    </View>
+
+                    <View style={styles.section}>
+                        <Text style={styles.label}>With min/max bounds</Text>
+                        <Text style={styles.value}>
+                            {formatDate(boundedDate)}
+                        </Text>
+                        <DateTimePicker
+                            initialValue={boundedDate}
+                            maxDate={maxDate}
+                            minDate={minDate}
+                            onDateChange={({ date }) => setBoundedDate(date)}
+                            styles={{
+                                pickerItem: styles.pickerItem,
+                                pickerLabel: styles.pickerLabel,
+                            }}
+                        />
+                        <Text style={styles.helper}>
+                            Allowed range: {formatDate(minDate)} –{" "}
+                            {formatDate(maxDate)}
+                        </Text>
+                    </View>
+
+                    <View style={styles.section}>
+                        <Text style={styles.label}>
+                            Custom formatting & order
+                        </Text>
+                        <Text style={styles.value}>
+                            {format(boundedDate, "do MMM yyyy")}
+                        </Text>
+                        <DateTimePicker
+                            columnOrder={["month", "day", "year"]}
+                            formatDateToParts={(date) => ({
+                                day: format(date, "do"),
+                                month: format(date, "MMM"),
+                                year: format(date, "''yy"),
+                            })}
+                            initialValue={boundedDate}
+                            maxDate={maxDate}
+                            minDate={minDate}
+                            onDateChange={({ date }) => setBoundedDate(date)}
+                            styles={{
+                                pickerItem: styles.pickerItem,
+                                pickerLabel: styles.pickerLabel,
+                            }}
+                        />
+                    </View>
+                </View>
+            </View>
+        </ScrollView>
     );
 }
 
+export const datePickerStyles: CustomDateTimePickerStyles = {
+    pickerContainer: {
+        marginLeft: 0,
+        marginRight: 0,
+        justifyContent: "center",
+    },
+    pickerItem: {
+        color: "#2B2B2B",
+        fontFamily: "Serif",
+    },
+    pickerItemContainer: {
+        height: 36,
+        // width: 60,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    text: {
+        fontFamily: "Noto Serif",
+        fontSize: 22,
+    },
+};
+
 const styles = StyleSheet.create({
-    container: {
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    page1Container: {
-        backgroundColor: "#514242",
-    },
-    page2Container: {
-        backgroundColor: "#F1F1F1",
-    },
-    page3Container: {
-        backgroundColor: "#F1F1F1",
-    },
-    page4Container: {
+    safeArea: {
         flex: 1,
+        backgroundColor: "#f5f5f5",
     },
-    page5Container: {
-        backgroundColor: "#F1F1F1",
-    },
-    textDark: {
-        fontSize: 18,
-        color: "#F1F1F1",
-    },
-    textLight: {
-        fontSize: 18,
-        color: "#202020",
-    },
-    alarmTextDark: {
-        fontSize: 48,
-        color: "#F1F1F1",
-    },
-    alarmTextLight: {
-        fontSize: 48,
-        color: "#202020",
-    },
-    touchableContainer: {
+    pickerContainer: {
         alignItems: "center",
-    },
-    button: {
-        paddingVertical: 10,
-        paddingHorizontal: 18,
-        borderWidth: 1,
-        borderRadius: 10,
-        fontSize: 16,
-        overflow: "hidden",
-    },
-    buttonDark: {
-        borderColor: "#C2C2C2",
-        color: "#C2C2C2",
-    },
-    buttonLight: { borderColor: "#8C8C8C", color: "#8C8C8C" },
-    buttonContainer: {
-        marginTop: 30,
-    },
-    chevronPressable: {
         justifyContent: "center",
-        alignItems: "center",
-        position: "absolute",
-        top: 0,
-        bottom: 0,
-        padding: 8,
     },
-    chevronPressable_pressed: {
-        opacity: 0.7,
+    selected: {
+        borderColor: "#1F5E73",
+        borderRadius: 12,
+        borderWidth: 2,
+        height: 40,
+        pointerEvents: "none",
+        position: "absolute",
+        width: 300,
+    },
+    container: {
+        flex: 1,
+        paddingHorizontal: 20,
+        paddingVertical: 32,
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: "800",
+        marginBottom: 24,
+        color: "#111",
+    },
+    section: {
+        backgroundColor: "white",
+        borderRadius: 16,
+        padding: 16,
+        marginBottom: 16,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 6,
+        elevation: 2,
+    },
+    label: {
+        fontSize: 16,
+        fontWeight: "700",
+        color: "#333",
+        marginBottom: 8,
+    },
+    value: {
+        fontSize: 16,
+        color: "#555",
+        marginBottom: 12,
+    },
+    pickerItem: {
+        fontSize: 20,
+    },
+    pickerLabel: {
+        fontSize: 16,
+        color: "#666",
+    },
+    helper: {
+        marginTop: 8,
+        fontSize: 14,
+        color: "#777",
     },
 });

@@ -42,15 +42,18 @@ export const generateNumbers = (
         padNumbersWithZero?: boolean;
         padWithNItems: number;
         repeatNTimes: number;
+        startFrom?: number;
     }
 ) => {
+    const startFrom = options.startFrom ?? 0;
+
     if (numberOfItems <= 0) {
         return [];
     }
 
     let numbers: string[] = [];
     for (let i = 0; i < numberOfItems; i++) {
-        const value = i * options.interval;
+        const value = startFrom + i * options.interval;
         numbers.push(
             padNumber(value, { padWithZero: options.padNumbersWithZero })
         );

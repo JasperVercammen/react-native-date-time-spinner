@@ -4,8 +4,11 @@
         "strict": true,
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
+        "baseUrl": ".",
         "paths": {
-            "react": ["./node_modules/@types/react"]
+            "react": ["./node_modules/@types/react"],
+            "react-native-date-time-picker": ["../../src"],
+            "react-native-date-time-picker/*": ["../../src/*"]
         }
     }
 }

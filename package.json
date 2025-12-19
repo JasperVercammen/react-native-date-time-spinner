@@ -1,12 +1,12 @@
 {
-    "name": "react-native-timer-picker",
-    "description": "A simple, flexible, performant duration picker for React Native apps 🔥\n\nGreat for timers, alarms and duration inputs ⏰🕰️⏳\n\nIncludes iOS-style haptic and audio feedback 🍏",
+    "name": "react-native-date-time-picker",
+    "description": "A simple, flexible, performant spinner-based date and time picker for React Native apps. Pick day, month, and year with a native-feeling scroll experience.",
     "author": {
-        "name": "Tim Roberts",
-        "url": "https://github.com/troberts-28"
+        "name": "Jasper Vercammen",
+        "url": "https://github.com/jaspervercammen"
     },
     "license": "MIT",
-    "version": "2.3.1",
+    "version": "1.0.0",
     "main": "dist/commonjs/index.js",
     "module": "dist/module/index.js",
     "types": "dist/typescript/index.d.ts",
@@ -20,8 +20,6 @@
     "scripts": {
         "setup": "yarn install",
         "start": " yarn workspace example-expo start",
-        "start-bare:android": "yarn workspace example-bare android && yarn workspace example-bare start",
-        "start-bare:ios": "yarn workspace example-bare ios && yarn workspace example-bare start",
         "test": "jest --forceExit --silent",
         "build": "bob build",
         "clean": "rm yarn.lock && rm -rf ./node_modules && yarn install",
@@ -30,58 +28,18 @@
         "ts": "tsc --noEmit",
         "prepare": "yarn build"
     },
-    "homepage": "https://github.com/troberts-28/react-native-timer-picker",
+    "homepage": "https://github.com/jaspervercammen/react-native-date-time-picker",
     "bugs": {
-        "url": "https://github.com/troberts-28/react-native-timer-picker/issues"
+        "url": "https://github.com/jaspervercammen/react-native-date-time-picker/issues"
     },
     "repository": {
         "name": "GitHub",
         "type": "git",
-        "url": "git+https://github.com/troberts-28/react-native-timer-picker.git"
+        "url": "git+https://github.com/jaspervercammen/react-native-date-time-picker.git"
     },
     "publishConfig": {
         "registry": "https://registry.npmjs.org/"
     },
-    "files": [
-        "dist",
-        "package.json",
-        "README.md",
-        "LICENSE"
-    ],
-    "keywords": [
-        "react",
-        "react-native",
-        "expo",
-        "duration",
-        "picker",
-        "time",
-        "timer",
-        "alarm",
-        "modal",
-        "durationpicker",
-        "duration-picker",
-        "duration-picker-modal",
-        "react-native-duration-picker",
-        "react-native-duration-picker-modal",
-        "timepicker",
-        "time-picker",
-        "alarmpicker",
-        "alarm-picker",
-        "alarm-picker-modal",
-        "react-native-alarm-picker",
-        "timerpicker",
-        "timer-picker",
-        "timer-picker-modal",
-        "react-native-duration-picker-modal",
-        "expo-duration-picker",
-        "expo-time-picker",
-        "expo-timepicker",
-        "expo-durationpicker",
-        "expo-duration-picker",
-        "expo-time-picker",
-        "expo-timepicker",
-        "expo-durationpicker"
-    ],
     "engines": {
         "node": ">=16.0.0"
     },

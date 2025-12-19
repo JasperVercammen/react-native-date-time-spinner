@@ -1,7 +1,7 @@
 /**
  * Calculates the initial scroll index for a number picker based on the desired value and configuration.
  * Handles both infinite and non-infinite scroll modes, taking into account padding and repetition.
- * 
+ *
  * @param {Object} variables - Configuration object for scroll index calculation
  * @param {boolean} variables.disableInfiniteScroll - Whether infinite scroll is disabled
  * @param {number} variables.interval - The interval between consecutive numbers
@@ -9,9 +9,9 @@
  * @param {number} variables.padWithNItems - Number of empty items to pad with
  * @param {number} variables.repeatNumbersNTimes - How many times to repeat the number sequence
  * @param {number} variables.value - The desired initial value
- * 
+ *
  * @returns {number} The calculated initial scroll index
- * 
+ *
  * @example
  * // With infinite scroll enabled
  * getInitialScrollIndex({
@@ -23,7 +23,7 @@
  *   value: 12
  * })
  * // Returns: 38
- * 
+ *
  * @example
  * // With infinite scroll disabled
  * getInitialScrollIndex({
@@ -42,6 +42,7 @@ export const getInitialScrollIndex = (variables: {
     numberOfItems: number;
     padWithNItems: number;
     repeatNumbersNTimes: number;
+    startFrom?: number;
     value: number;
 }) => {
     const {
@@ -50,12 +51,13 @@ export const getInitialScrollIndex = (variables: {
         numberOfItems,
         padWithNItems,
         repeatNumbersNTimes,
+        startFrom = 0,
         value,
     } = variables;
 
     return Math.max(
         numberOfItems * Math.floor(repeatNumbersNTimes / 2) +
-            ((value / interval + numberOfItems) % numberOfItems) -
+            (((value - startFrom) / interval + numberOfItems) % numberOfItems) -
             (!disableInfiniteScroll ? padWithNItems : 0),
         0
     );

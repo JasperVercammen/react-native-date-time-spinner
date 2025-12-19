@@ -3,35 +3,29 @@ import type { RefObject } from "react";
 
 import type { View } from "react-native";
 
-import type { generateStyles } from "../TimerPicker/styles";
+import type { generateStyles } from "../DateTimePicker/styles";
 
 export interface DurationScrollProps {
-    Audio?: any;
     FlatList?: any;
-    Haptics?: any;
     LinearGradient?: any;
     MaskedView?: any;
-    aggressivelyGetLatestDuration: boolean;
     allowFontScaling?: boolean;
-    amLabel?: string;
-    clickSoundAsset?: SoundAsset;
     decelerationRate?: number | "normal" | "fast";
     disableInfiniteScroll?: boolean;
+    formatValue?: (value: number) => string;
     initialValue?: number;
     interval: number;
-    is12HourPicker?: boolean;
     isDisabled?: boolean;
-    label?: string | React.ReactElement;
     limit?: Limit;
     maximumValue: number;
-    onDurationChange: (duration: number) => void;
+    onDurationChange: (value: number) => void;
     padNumbersWithZero?: boolean;
     padWithNItems: number;
     pickerFeedback?: () => void | Promise<void>;
     pickerGradientOverlayProps?: Partial<LinearGradientProps>;
-    pmLabel?: string;
     repeatNumbersNTimes?: number;
     repeatNumbersNTimesNotExplicitlySet: boolean;
+    startFrom?: number;
     styles: ReturnType<typeof generateStyles>;
     testID?: string;
 }
@@ -59,15 +53,4 @@ export type Limit = {
     min?: number;
 };
 
-export type SoundAsset =
-    | number
-    | {
-          headers?: Record<string, string>;
-          overrideFileExtensionAndroid?: string;
-          uri: string;
-      };
-
-export type ExpoAvAudioInstance = {
-    replayAsync: () => Promise<void>;
-    unloadAsync: () => Promise<void>;
-};
+// legacy audio types removed; keeping file lean for date picker use cases

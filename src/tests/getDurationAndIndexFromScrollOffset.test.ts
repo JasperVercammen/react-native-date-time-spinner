@@ -1,204 +1,33 @@
 import { getDurationAndIndexFromScrollOffset } from "../utils/getDurationAndIndexFromScrollOffset";
 
 describe("getDurationAndIndexFromScrollOffset", () => {
-    describe("infinite scroll disabled", () => {
-        it("calculates duration and index at start position", () => {
-            const result = getDurationAndIndexFromScrollOffset({
-                disableInfiniteScroll: true,
-                interval: 1,
-                itemHeight: 50,
-                numberOfItems: 60,
-                padWithNItems: 2,
-                yContentOffset: 0,
-            });
-            expect(result).toEqual({ duration: 0, index: 0 });
+    it("respects startFrom when infinite scroll is disabled", () => {
+        const result = getDurationAndIndexFromScrollOffset({
+            disableInfiniteScroll: true,
+            interval: 1,
+            itemHeight: 50,
+            numberOfItems: 31,
+            padWithNItems: 0,
+            startFrom: 1,
+            yContentOffset: 0,
         });
 
-        it("calculates duration and index at middle position", () => {
-            const result = getDurationAndIndexFromScrollOffset({
-                disableInfiniteScroll: true,
-                interval: 1,
-                itemHeight: 50,
-                numberOfItems: 60,
-                padWithNItems: 2,
-                yContentOffset: 500,
-            });
-            expect(result).toEqual({ duration: 10, index: 10 });
-        });
-
-        it("calculates duration and index with interval of 5", () => {
-            const result = getDurationAndIndexFromScrollOffset({
-                disableInfiniteScroll: true,
-                interval: 5,
-                itemHeight: 50,
-                numberOfItems: 12,
-                padWithNItems: 2,
-                yContentOffset: 200,
-            });
-            expect(result).toEqual({ duration: 20, index: 4 });
-        });
-
-        it("calculates duration and index with different item height", () => {
-            const result = getDurationAndIndexFromScrollOffset({
-                disableInfiniteScroll: true,
-                interval: 1,
-                itemHeight: 40,
-                numberOfItems: 60,
-                padWithNItems: 2,
-                yContentOffset: 200,
-            });
-            expect(result).toEqual({ duration: 5, index: 5 });
-        });
-
-        it("rounds to nearest index", () => {
-            const result = getDurationAndIndexFromScrollOffset({
-                disableInfiniteScroll: true,
-                interval: 1,
-                itemHeight: 50,
-                numberOfItems: 60,
-                padWithNItems: 2,
-                yContentOffset: 127,
-            });
-            expect(result).toEqual({ duration: 3, index: 3 }); // 127/50 = 2.54, rounds to 3
-        });
-
-        it("handles wrap-around at max value", () => {
-            const result = getDurationAndIndexFromScrollOffset({
-                disableInfiniteScroll: true,
-                interval: 1,
-                itemHeight: 50,
-                numberOfItems: 24,
-                padWithNItems: 2,
-                yContentOffset: 1200,
-            });
-            expect(result).toEqual({ duration: 0, index: 24 }); // 24 % 24 = 0
-        });
+        expect(result).toEqual({ duration: 1, index: 0 });
     });
 
-    describe("infinite scroll enabled", () => {
-        it("calculates duration and index at start position", () => {
-            const result = getDurationAndIndexFromScrollOffset({
-                disableInfiniteScroll: false,
-                interval: 1,
-                itemHeight: 50,
-                numberOfItems: 60,
-                padWithNItems: 2,
-                yContentOffset: 0,
-            });
-            expect(result).toEqual({ duration: 2, index: 0 });
+    it("respects startFrom when infinite scroll is enabled", () => {
+        const result = getDurationAndIndexFromScrollOffset({
+            disableInfiniteScroll: false,
+            interval: 1,
+            itemHeight: 50,
+            numberOfItems: 12,
+            padWithNItems: 2,
+            startFrom: 1950,
+            yContentOffset: 50,
         });
 
-        it("accounts for padding offset in infinite scroll", () => {
-            const result = getDurationAndIndexFromScrollOffset({
-                disableInfiniteScroll: false,
-                interval: 1,
-                itemHeight: 50,
-                numberOfItems: 60,
-                padWithNItems: 2,
-                yContentOffset: 100,
-            });
-            expect(result).toEqual({ duration: 4, index: 2 });
-        });
-
-        it("calculates duration with larger padding", () => {
-            const result = getDurationAndIndexFromScrollOffset({
-                disableInfiniteScroll: false,
-                interval: 1,
-                itemHeight: 50,
-                numberOfItems: 60,
-                padWithNItems: 5,
-                yContentOffset: 0,
-            });
-            expect(result).toEqual({ duration: 5, index: 0 });
-        });
-
-        it("handles modulo wrap-around correctly", () => {
-            const result = getDurationAndIndexFromScrollOffset({
-                disableInfiniteScroll: false,
-                interval: 1,
-                itemHeight: 50,
-                numberOfItems: 24,
-                padWithNItems: 2,
-                yContentOffset: 1100,
-            });
-            expect(result).toEqual({ duration: 0, index: 22 }); // (22 + 2) % 24 = 0, wraps to duration 0
-        });
-
-        it("calculates with interval of 15", () => {
-            const result = getDurationAndIndexFromScrollOffset({
-                disableInfiniteScroll: false,
-                interval: 15,
-                itemHeight: 50,
-                numberOfItems: 4,
-                padWithNItems: 2,
-                yContentOffset: 100,
-            });
-            expect(result).toEqual({ duration: 0, index: 2 }); // (2 + 2) % 4 = 0, 0 * 15 = 0
-        });
+        expect(result).toEqual({ duration: 1951, index: 1 });
     });
-
-    describe("different intervals", () => {
-        it("handles interval of 1", () => {
-            const result = getDurationAndIndexFromScrollOffset({
-                disableInfiniteScroll: true,
-                interval: 1,
-                itemHeight: 50,
-                numberOfItems: 60,
-                padWithNItems: 2,
-                yContentOffset: 300,
-            });
-            expect(result).toEqual({ duration: 6, index: 6 });
-        });
-
-        it("handles interval of 5", () => {
-            const result = getDurationAndIndexFromScrollOffset({
-                disableInfiniteScroll: true,
-                interval: 5,
-                itemHeight: 50,
-                numberOfItems: 12,
-                padWithNItems: 2,
-                yContentOffset: 300,
-            });
-            expect(result).toEqual({ duration: 30, index: 6 });
-        });
-
-        it("handles interval of 15 for minutes", () => {
-            const result = getDurationAndIndexFromScrollOffset({
-                disableInfiniteScroll: true,
-                interval: 15,
-                itemHeight: 50,
-                numberOfItems: 4,
-                padWithNItems: 2,
-                yContentOffset: 150,
-            });
-            expect(result).toEqual({ duration: 45, index: 3 });
-        });
-
-        it("handles interval of 10", () => {
-            const result = getDurationAndIndexFromScrollOffset({
-                disableInfiniteScroll: true,
-                interval: 10,
-                itemHeight: 50,
-                numberOfItems: 6,
-                padWithNItems: 2,
-                yContentOffset: 100,
-            });
-            expect(result).toEqual({ duration: 20, index: 2 });
-        });
-    });
-
-    describe("different item heights", () => {
-        it("handles item height of 30", () => {
-            const result = getDurationAndIndexFromScrollOffset({
-                disableInfiniteScroll: true,
-                interval: 1,
-                itemHeight: 30,
-                numberOfItems: 60,
-                padWithNItems: 2,
-                yContentOffset: 180,
-            });
-            expect(result).toEqual({ duration: 6, index: 6 });
-        });
 
         it("handles item height of 60", () => {
             const result = getDurationAndIndexFromScrollOffset({

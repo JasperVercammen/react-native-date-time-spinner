@@ -13,7 +13,7 @@ config.transformer.getTransformOptions = async () => ({
 });
 
 const extraNodeModules = {
-    "react-native-timer-picker": path.resolve(__dirname, "../../src"),
+    "react-native-date-time-picker": path.resolve(__dirname, "../../src"),
 };
 
 config.resolver.extraNodeModules = new Proxy(extraNodeModules, {

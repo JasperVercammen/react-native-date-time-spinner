@@ -42,6 +42,7 @@ export const getDurationAndIndexFromScrollOffset = (variables: {
     itemHeight: number;
     numberOfItems: number;
     padWithNItems: number;
+    startFrom?: number;
     yContentOffset: number;
 }) => {
     const {
@@ -50,15 +51,17 @@ export const getDurationAndIndexFromScrollOffset = (variables: {
         itemHeight,
         numberOfItems,
         padWithNItems,
+        startFrom = 0,
         yContentOffset,
     } = variables;
 
     const index = Math.round(yContentOffset / itemHeight);
 
     const duration =
+        startFrom +
         ((disableInfiniteScroll ? index : index + padWithNItems) %
             numberOfItems) *
-        interval;
+            interval;
 
     return {
         duration,

@@ -28,12 +28,13 @@ import type { Limit } from "../components/DurationScroll/types";
 export const getAdjustedLimit = (
     limit: Limit | undefined,
     numberOfItems: number,
-    interval: number
+    interval: number,
+    startFrom = 0
 ): {
     max: number;
     min: number;
 } => {
-    const maxValue = (numberOfItems - 1) * interval;
+    const maxValue = startFrom + (numberOfItems - 1) * interval;
 
     if (!limit || (limit.max === undefined && limit.min === undefined)) {
         return {
@@ -43,10 +44,10 @@ export const getAdjustedLimit = (
     }
 
     // guard against limits that are out of bounds
-    const adjustedMaxLimit = limit.max !== undefined
-        ? Math.min(limit.max, maxValue)
-        : maxValue;
-    const adjustedMinLimit = limit.min !== undefined ? Math.max(limit.min, 0) : 0;
+    const adjustedMaxLimit =
+        limit.max !== undefined ? Math.min(limit.max, maxValue) : maxValue;
+    const adjustedMinLimit =
+        limit.min !== undefined ? Math.max(limit.min, startFrom) : startFrom;
 
     // guard against invalid limits
     if (adjustedMaxLimit < adjustedMinLimit) {
