@@ -9,7 +9,22 @@ Full Javascript, no linking required
 
 Based on (and grateful to) [`react-native-timer-picker`](https://www.npmjs.com/package/react-native-timer-picker).
 
-## Demos 📱
+## 📘 Table of Contents
+
+-   [📱 Demos](#demos)
+-   [🛠️ Installation](#installation)
+-   [🚀 Quick start (date)](#quick-start-date)
+-   [🕑 Date-time mode (date + hour + minute) and gradient overlay](#date-time-mode-date--hour--minute-and-gradient-overlay)
+-   [🔄 Month/day/year swap with formatted labels](#monthdayyear-swap-with-formatted-labels)
+-   [🎯 Example with selected line and non-infinite scrolling](#example-with-selected-line-and-non-infinite-scrolling)
+-   [🧪 Extended example (datetime with spacing, separator, gradient mask)](#extended-example-datetime-with-spacing-separator-gradient-mask)
+-   [📑 Props](#props)
+-   [🎨 Styling](#styling)
+-   [🧭 Behavior notes](#behavior-notes)
+-   [🤝 Contributing / scripts](#contributing--scripts)
+-   [⚖️ License](#license)
+
+## 📱 Demos
 
 <p>
     <img src="demos/example_1.gif" width="250"  style="margin-right:50px" />
@@ -19,7 +34,7 @@ Based on (and grateful to) [`react-native-timer-picker`](https://www.npmjs.com/p
     <img src="demos/example_5.gif" width="250"  style="margin-right:50px" />
 </p>
 
-## Installation
+## 🛠️ Installation
 
 React Native >= 0.72, React >= 18.2.
 
@@ -29,7 +44,7 @@ yarn add react-native-date-time-spinner
 npm install react-native-date-time-spinner
 ```
 
-## Quick start (date)
+## 🚀 Quick start (date)
 
 <p><img src="demos/example_1.gif" width="250"  style="margin-right:50px" /></p>
 
@@ -57,7 +72,7 @@ export default function Example() {
 }
 ```
 
-## Date-time mode (date + hour + minute) and gradient overlay
+## 🕑 Date-time mode (date + hour + minute) and gradient overlay
 
 <p><img src="demos/example_2.gif" width="250"  style="margin-right:50px" /></p>
 
@@ -94,7 +109,7 @@ export default function Example() {
 }
 ```
 
-## Month/day/year swap with formatted labels
+## 🔄 Month/day/year swap with formatted labels
 
 <p><img src="demos/example_4.gif" width="250"  style="margin-right:50px" /></p>
 
@@ -114,7 +129,7 @@ import { LinearGradient } from "expo-linear-gradient";
 />;
 ```
 
-## Example with selected line and non-infinite scrolling
+## 🎯 Example with selected line and non-infinite scrolling
 
 <p><img src="demos/example_5.gif" width="250"  style="margin-right:50px" /></p>
 
@@ -169,7 +184,7 @@ export default function Example() {
 }
 ```
 
-## Extended example (datetime with spacing, separator, gradient mask)
+## 🧪 Extended example (datetime with spacing, separator, gradient mask)
 
 <p><img src="demos/example_3.gif" width="250"  style="margin-right:50px" /></p>
 
@@ -220,7 +235,7 @@ export default function Example() {
 }
 ```
 
-## Props
+## 📑 Props
 
 | Prop                         | Type                                                        | Default                    | Description                                                                    |
 | ---------------------------- | ----------------------------------------------------------- | -------------------------- | ------------------------------------------------------------------------------ |
@@ -251,7 +266,7 @@ export default function Example() {
 | `styles`                     | `CustomDateTimeSpinnerStyles`                               | `undefined`                | Style overrides (see below).                                                   |
 | `pickerContainerProps`       | `View` props                                                | `undefined`                | Extra props for outer container.                                               |
 
-## Styling
+## 🎨 Styling
 
 Provide `styles` to override typography, sizing, colors, and spacing. Defaults are derived from `src/components/TimerPicker/styles.ts`.
 
@@ -275,18 +290,18 @@ Provide `styles` to override typography, sizing, colors, and spacing. Defaults a
 | `disabledPickerItem`                     | `TextStyle`                       | `opacity: 0.2`                                       | Applied to disabled items.                                |
 | `text`                                   | `TextStyle`                       | n/a                                                  | Base text override applied to labels/items when provided. |
 
-## Behavior notes
+## 🧭 Behavior notes
 
 -   Values are clamped to `minDate`/`maxDate`; days respect month length.
 -   In `datetime` mode, the date column lists all days in range; hour/minute remain separate columns.
 -   Inside a `ScrollView`, enable `nestedScrollEnabled` on the parent to quiet nested list warnings.
 
-## Contributing / scripts
+## 🤝 Contributing / scripts
 
 -   `yarn test` – run Jest
 -   `yarn lint` – lint
 -   `yarn build` – build with bob
 
-## License
+## ⚖️ License
 
 MIT
