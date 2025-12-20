@@ -42,7 +42,7 @@
     "repository": {
         "name": "GitHub",
         "type": "git",
-        "url": "git+https://github.com/jaspervercammen/react-native-date-time-spinner.git"
+        "url": "https://github.com/JasperVercammen/react-native-date-time-spinner"
     },
     "publishConfig": {
         "registry": "https://registry.npmjs.org/"
