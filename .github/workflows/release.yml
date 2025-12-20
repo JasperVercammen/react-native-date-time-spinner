@@ -1,29 +1,44 @@
 name: "🚀 release"
 
 on:
-  push:
-    branches:
-      - main
+    workflow_dispatch:
+        inputs:
+            releaseType:
+                description: "Select release type"
+                required: true
+                default: patch
+                type: choice
+                options:
+                    - patch
+                    - minor
+                    - major
 
 permissions:
-  id-token: write # Required for OIDC
-  contents: read
+    id-token: write # Required for OIDC
+    contents: read
 
 jobs:
-  release:
-    name: 🚀 release
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          registry-url: https://registry.npmjs.org
-      - name: Update npm
-        run: npm install -g npm@latest
-      - name: Install dependencies
-        run: yarn
-      - name: Release
-        run: npm publish
+    release:
+        name: 🚀 release
+        runs-on: ubuntu-latest
+        steps:
+            - name: checkout
+              uses: actions/checkout@v4
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  registry-url: https://registry.npmjs.org
+            - name: Update npm
+              run: npm install -g npm@latest
+            - name: Install dependencies
+              run: yarn
+            - name: Release
+              env:
+                  RELEASE_TYPE: ${{ inputs.releaseType }}
+              run: |
+                  npm version "$RELEASE_TYPE" --no-git-tag-version
+                  git config user.name "github-actions"
+                  git config user.email "github-actions@github.com"
+                  git commit -am "ci: bump version ($RELEASE_TYPE)"
+                  npm publish
