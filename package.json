@@ -35,14 +35,14 @@
         "ts": "tsc --noEmit",
         "prepare": "yarn build"
     },
-    "homepage": "https://github.com/jaspervercammen/react-native-date-time-picker",
+    "homepage": "https://github.com/jaspervercammen/react-native-date-time-spinner",
     "bugs": {
-        "url": "https://github.com/jaspervercammen/react-native-date-time-picker/issues"
+        "url": "https://github.com/jaspervercammen/react-native-date-time-spinner/issues"
     },
     "repository": {
         "name": "GitHub",
         "type": "git",
-        "url": "git+https://github.com/jaspervercammen/react-native-date-time-picker.git"
+        "url": "git+https://github.com/jaspervercammen/react-native-date-time-spinner.git"
     },
     "publishConfig": {
         "registry": "https://registry.npmjs.org/"
