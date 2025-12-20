@@ -1,21 +1,11 @@
 name: "🚀 release"
 
 on:
-    workflow_dispatch:
-        inputs:
-            releaseType:
-                description: "Select release type"
-                required: true
-                default: patch
-                type: choice
-                options:
-                    - patch
-                    - minor
-                    - major
+  workflow_dispatch:
 
 permissions:
-    id-token: write # Required for OIDC
-    contents: read
+  id-token: write # Required for OIDC
+  contents: write
 
 jobs:
     release:
@@ -34,11 +24,11 @@ jobs:
             - name: Install dependencies
               run: yarn
             - name: Release
-              env:
-                  RELEASE_TYPE: ${{ inputs.releaseType }}
-              run: |
-                  npm version "$RELEASE_TYPE" --no-git-tag-version
-                  git config user.name "github-actions"
-                  git config user.email "github-actions@github.com"
-                  git commit -am "ci: bump version ($RELEASE_TYPE)"
-                  npm publish
+                    run: npm publish
+            - name: Merge current branch into main
+              if: github.ref_name != 'main'
+              uses: peter-evans/merge-branch@v4
+              with:
+                  head_branch: ${{ github.ref_name }}
+                  target_branch: main
+                  commit_message: "chore: merge release into main"
