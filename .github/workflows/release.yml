@@ -1,11 +1,16 @@
 name: "🚀 release"
 
 on:
-  workflow_dispatch:
+    workflow_dispatch:
+        inputs:
+            branch:
+                description: "Branch to release"
+                required: true
+                default: "main"
 
 permissions:
-  id-token: write # Required for OIDC
-  contents: write
+    id-token: write # Required for OIDC
+    contents: write
 
 jobs:
     release:
@@ -14,6 +19,9 @@ jobs:
         steps:
             - name: checkout
               uses: actions/checkout@v4
+              with:
+                  ref: ${{ github.event.inputs.branch }}
+                  fetch-depth: 0
             - name: Setup Node.js
               uses: actions/setup-node@v4
               with:
@@ -24,11 +32,11 @@ jobs:
             - name: Install dependencies
               run: yarn
             - name: Release
-                    run: npm publish
+              run: npm publish
             - name: Merge current branch into main
-              if: github.ref_name != 'main'
+              if: github.event.inputs.branch != 'main'
               uses: peter-evans/merge-branch@v4
               with:
-                  head_branch: ${{ github.ref_name }}
+                  head_branch: ${{ github.event.inputs.branch }}
                   target_branch: main
                   commit_message: "chore: merge release into main"
