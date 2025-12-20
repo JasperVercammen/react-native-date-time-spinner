@@ -6,7 +6,7 @@
         "url": "https://github.com/jaspervercammen"
     },
     "license": "MIT",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "main": "dist/commonjs/index.js",
     "module": "dist/module/index.js",
     "types": "dist/typescript/index.d.ts",
