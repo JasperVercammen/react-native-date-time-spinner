@@ -35,7 +35,7 @@ jobs:
               run: npm publish
             - name: Merge current branch into main
               if: github.event.inputs.branch != 'main'
-              uses: peter-evans/merge-branch@v4
+              uses: devmasx/merge-branch@master
               with:
                   head_branch: ${{ github.event.inputs.branch }}
                   target_branch: main
