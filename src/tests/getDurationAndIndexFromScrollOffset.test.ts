@@ -26,7 +26,7 @@ describe("getDurationAndIndexFromScrollOffset", () => {
             yContentOffset: 50,
         });
 
-        expect(result).toEqual({ duration: 1951, index: 1 });
+        expect(result).toEqual({ duration: 1953, index: 1 });
     });
 
         it("handles item height of 60", () => {

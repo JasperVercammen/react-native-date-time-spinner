@@ -76,24 +76,39 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
         const normalizeDate = (date: Date) =>
             new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
-        const resolvedMinDate = useMemo(() => {
-            const fallback = new Date(now.getFullYear() - 50, 0, 1);
-            if (minDateProp) return normalizeDate(minDateProp);
-            return normalizeDate(fallback);
+        const resolvedMinDateTime = useMemo(() => {
+            const fallback = new Date(now.getFullYear() - 50, 0, 1, 0, 0, 0, 0);
+            return minDateProp ? new Date(minDateProp) : fallback;
         }, [minDateProp, now]);
 
-        const resolvedMaxDate = useMemo(() => {
-            const fallback = new Date(now.getFullYear() + 50, 11, 31);
-            if (maxDateProp) return normalizeDate(maxDateProp);
-            return normalizeDate(fallback);
+        const resolvedMaxDateTime = useMemo(() => {
+            const fallback = new Date(
+                now.getFullYear() + 50,
+                11,
+                31,
+                23,
+                59,
+                59,
+                999
+            );
+            return maxDateProp ? new Date(maxDateProp) : fallback;
         }, [maxDateProp, now]);
 
-        const [minDate, maxDate] = useMemo(() => {
-            if (resolvedMinDate.getTime() > resolvedMaxDate.getTime()) {
-                return [resolvedMaxDate, resolvedMinDate];
+        const [minDateTime, maxDateTime] = useMemo(() => {
+            if (resolvedMinDateTime.getTime() > resolvedMaxDateTime.getTime()) {
+                return [resolvedMaxDateTime, resolvedMinDateTime];
             }
-            return [resolvedMinDate, resolvedMaxDate];
-        }, [resolvedMaxDate, resolvedMinDate]);
+            return [resolvedMinDateTime, resolvedMaxDateTime];
+        }, [resolvedMaxDateTime, resolvedMinDateTime]);
+
+        const minDate = useMemo(
+            () => normalizeDate(minDateTime),
+            [minDateTime]
+        );
+        const maxDate = useMemo(
+            () => normalizeDate(maxDateTime),
+            [maxDateTime]
+        );
 
         const bounds = useMemo(
             () => ({
@@ -114,6 +129,78 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
             [maxDate, minDate]
         );
 
+        const getTimeBoundsForDate = useCallback(
+            (date: Date) => {
+                const normalized = normalizeDate(date);
+                const minDay = minDate.getTime();
+                const maxDay = maxDate.getTime();
+
+                let minHour = 0;
+                let minMinute = 0;
+                let maxHour = 23;
+                let maxMinute = 59;
+
+                if (normalized.getTime() === minDay) {
+                    minHour = minDateTime.getHours();
+                    minMinute = minDateTime.getMinutes();
+                }
+
+                if (normalized.getTime() === maxDay) {
+                    maxHour = maxDateTime.getHours();
+                    maxMinute = maxDateTime.getMinutes();
+                }
+
+                if (minHour > maxHour) {
+                    minHour = maxHour;
+                    minMinute = 0;
+                }
+
+                if (minHour === maxHour && minMinute > maxMinute) {
+                    minMinute = maxMinute;
+                }
+
+                return {
+                    maxHour,
+                    maxMinute,
+                    minHour,
+                    minMinute,
+                };
+            },
+            [maxDate, maxDateTime, minDate, minDateTime]
+        );
+
+        const clampTimeToBounds = useCallback(
+            (date: Date, hour: number, minute: number) => {
+                const { maxHour, maxMinute, minHour, minMinute } =
+                    getTimeBoundsForDate(date);
+
+                let safeHour = clampHourValue(hour);
+                let safeMinute = clampMinuteValue(minute);
+
+                if (safeHour < minHour) {
+                    safeHour = minHour;
+                    safeMinute = Math.max(safeMinute, minMinute);
+                } else if (safeHour > maxHour) {
+                    safeHour = maxHour;
+                    safeMinute = Math.min(safeMinute, maxMinute);
+                }
+
+                if (safeHour === minHour && safeMinute < minMinute) {
+                    safeMinute = minMinute;
+                }
+
+                if (safeHour === maxHour && safeMinute > maxMinute) {
+                    safeMinute = maxMinute;
+                }
+
+                return {
+                    hour: safeHour,
+                    minute: safeMinute,
+                };
+            },
+            [clampHourValue, clampMinuteValue, getTimeBoundsForDate]
+        );
+
         const safeInitialValue = useMemo(() => {
             const parts = getSafeInitialDateValue(
                 initialValue as DateInput,
@@ -130,30 +217,6 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
             };
         }, [bounds, clampDateToRange, initialValue, now]);
 
-        const safeInitialTime = useMemo(() => {
-            const fallback = now;
-            const raw =
-                initialValue instanceof Date
-                    ? {
-                          hour: initialValue.getHours(),
-                          minute: initialValue.getMinutes(),
-                      }
-                    : initialValue ?? {};
-
-            return {
-                hour: clampHourValue(
-                    typeof raw.hour === "number" && !isNaN(raw.hour)
-                        ? raw.hour
-                        : fallback.getHours()
-                ),
-                minute: clampMinuteValue(
-                    typeof raw.minute === "number" && !isNaN(raw.minute)
-                        ? raw.minute
-                        : fallback.getMinutes()
-                ),
-            };
-        }, [clampHourValue, clampMinuteValue, initialValue, now]);
-
         const initialDateForRange = useMemo(
             () =>
                 clampDateToRange(
@@ -165,6 +228,46 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
                 ),
             [clampDateToRange, safeInitialValue]
         );
+
+        const safeInitialTime = useMemo(() => {
+            const fallback = now;
+            const raw =
+                initialValue instanceof Date
+                    ? {
+                          hour: initialValue.getHours(),
+                          minute: initialValue.getMinutes(),
+                      }
+                    : initialValue ?? {};
+
+            const baseDate = isDateTimeMode
+                ? initialDateForRange
+                : new Date(
+                      safeInitialValue.year,
+                      safeInitialValue.month - 1,
+                      safeInitialValue.day
+                  );
+
+            const clampedTime = clampTimeToBounds(
+                baseDate,
+                typeof raw.hour === "number" && !isNaN(raw.hour)
+                    ? raw.hour
+                    : fallback.getHours(),
+                typeof raw.minute === "number" && !isNaN(raw.minute)
+                    ? raw.minute
+                    : fallback.getMinutes()
+            );
+
+            return clampedTime;
+        }, [
+            clampTimeToBounds,
+            initialDateForRange,
+            initialValue,
+            isDateTimeMode,
+            now,
+            safeInitialValue.day,
+            safeInitialValue.month,
+            safeInitialValue.year,
+        ]);
 
         const totalDays = useMemo(
             () =>
@@ -267,6 +370,11 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
             return Math.round(padWithNItems);
         }, [padWithNItems]);
 
+        const getDateFromIndex = useCallback(
+            (index: number) => addDays(minDate, clampDateIndex(index)),
+            [addDays, clampDateIndex, minDate]
+        );
+
         const dateScrollRef = useRef<DurationScrollRef>(null);
         const dayScrollRef = useRef<DurationScrollRef>(null);
         const hourScrollRef = useRef<DurationScrollRef>(null);
@@ -279,10 +387,36 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
             setSelectedDateIndex((prev) => clampDateIndex(prev));
         }, [clampDateIndex, isDateTimeMode]);
 
-        const getDateFromIndex = useCallback(
-            (index: number) => addDays(minDate, clampDateIndex(index)),
-            [addDays, clampDateIndex, minDate]
-        );
+        useEffect(() => {
+            if (!isDateTimeMode) return;
+
+            const clamped = clampTimeToBounds(
+                getDateFromIndex(selectedDateIndex),
+                selectedHour,
+                selectedMinute
+            );
+
+            if (clamped.hour !== selectedHour) {
+                setSelectedHour(clamped.hour);
+                hourScrollRef.current?.setValue(clamped.hour, {
+                    animated: false,
+                });
+            }
+
+            if (clamped.minute !== selectedMinute) {
+                setSelectedMinute(clamped.minute);
+                minuteScrollRef.current?.setValue(clamped.minute, {
+                    animated: false,
+                });
+            }
+        }, [
+            clampTimeToBounds,
+            getDateFromIndex,
+            isDateTimeMode,
+            selectedDateIndex,
+            selectedHour,
+            selectedMinute,
+        ]);
 
         const formatDateColumnValue = useCallback(
             (index: number) => {
@@ -298,6 +432,61 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
             },
             [formatDateLabel, getDateFromIndex]
         );
+
+        const currentDateForTimeBounds = useMemo(
+            () =>
+                isDateTimeMode
+                    ? getDateFromIndex(selectedDateIndex)
+                    : new Date(selectedYear, selectedMonth - 1, selectedDay),
+            [
+                getDateFromIndex,
+                isDateTimeMode,
+                selectedDateIndex,
+                selectedDay,
+                selectedMonth,
+                selectedYear,
+            ]
+        );
+
+        const timeBounds = useMemo(
+            () => getTimeBoundsForDate(currentDateForTimeBounds),
+            [currentDateForTimeBounds, getTimeBoundsForDate]
+        );
+
+        const hourLimit = useMemo(
+            () => ({ min: timeBounds.minHour, max: timeBounds.maxHour }),
+            [timeBounds.maxHour, timeBounds.minHour]
+        );
+
+        const minuteLimit = useMemo(() => {
+            let min = 0;
+            let max = 59;
+
+            if (selectedHour === timeBounds.minHour) {
+                min = timeBounds.minMinute;
+            }
+
+            if (selectedHour === timeBounds.maxHour) {
+                max = timeBounds.maxMinute;
+            }
+
+            if (timeBounds.minHour === timeBounds.maxHour) {
+                min = Math.max(min, timeBounds.minMinute);
+                max = Math.min(max, timeBounds.maxMinute);
+            }
+
+            if (min > max) {
+                min = max;
+            }
+
+            return { min, max };
+        }, [
+            selectedHour,
+            timeBounds.maxHour,
+            timeBounds.maxMinute,
+            timeBounds.minHour,
+            timeBounds.minMinute,
+        ]);
 
         const formatHour = useMemo(() => {
             const fallback = (value: number) =>
@@ -316,6 +505,68 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
 
             return fallback;
         }, [padMinuteWithZero]);
+
+        const handleHourChange = useCallback(
+            (value: number) => {
+                if (!isDateTimeMode) {
+                    setSelectedHour(clampHourValue(value));
+                    return;
+                }
+
+                const clamped = clampTimeToBounds(
+                    currentDateForTimeBounds,
+                    value,
+                    selectedMinute
+                );
+
+                setSelectedHour(clamped.hour);
+
+                if (clamped.minute !== selectedMinute) {
+                    setSelectedMinute(clamped.minute);
+                    minuteScrollRef.current?.setValue(clamped.minute, {
+                        animated: false,
+                    });
+                }
+            },
+            [
+                clampHourValue,
+                clampTimeToBounds,
+                currentDateForTimeBounds,
+                isDateTimeMode,
+                selectedMinute,
+            ]
+        );
+
+        const handleMinuteChange = useCallback(
+            (value: number) => {
+                if (!isDateTimeMode) {
+                    setSelectedMinute(clampMinuteValue(value));
+                    return;
+                }
+
+                const clamped = clampTimeToBounds(
+                    currentDateForTimeBounds,
+                    selectedHour,
+                    value
+                );
+
+                if (clamped.hour !== selectedHour) {
+                    setSelectedHour(clamped.hour);
+                    hourScrollRef.current?.setValue(clamped.hour, {
+                        animated: false,
+                    });
+                }
+
+                setSelectedMinute(clamped.minute);
+            },
+            [
+                clampMinuteValue,
+                clampTimeToBounds,
+                currentDateForTimeBounds,
+                isDateTimeMode,
+                selectedHour,
+            ]
+        );
 
         const formatDay = useMemo(() => {
             const fallback = (value: number) =>
@@ -582,24 +833,28 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
                     )
                 );
 
-                const nextHour = clampHourValue(
+                const nextHourRaw =
                     value instanceof Date
                         ? value.getHours()
-                        : value.hour ?? selectedHour
-                );
+                        : value.hour ?? selectedHour;
 
-                const nextMinute = clampMinuteValue(
+                const nextMinuteRaw =
                     value instanceof Date
                         ? value.getMinutes()
-                        : value.minute ?? selectedMinute
+                        : value.minute ?? selectedMinute;
+
+                const clampedTime = clampTimeToBounds(
+                    clampedDate,
+                    nextHourRaw,
+                    nextMinuteRaw
                 );
 
                 setSelectedDateIndex(nextIndex);
-                setSelectedHour(nextHour);
-                setSelectedMinute(nextMinute);
+                setSelectedHour(clampedTime.hour);
+                setSelectedMinute(clampedTime.minute);
                 dateScrollRef.current?.setValue(nextIndex, options);
-                hourScrollRef.current?.setValue(nextHour, options);
-                minuteScrollRef.current?.setValue(nextMinute, options);
+                hourScrollRef.current?.setValue(clampedTime.hour, options);
+                minuteScrollRef.current?.setValue(clampedTime.minute, options);
 
                 return;
             }
@@ -733,11 +988,11 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
                                     formatValue={formatHour}
                                     initialValue={selectedHour}
                                     interval={1}
-                                    limit={{ min: 0, max: 23 }}
+                                    limit={hourLimit}
                                     LinearGradient={LinearGradient}
                                     MaskedView={MaskedView}
                                     maximumValue={23}
-                                    onDurationChange={setSelectedHour}
+                                    onDurationChange={handleHourChange}
                                     padNumbersWithZero={false}
                                     padWithNItems={safePadWithNItems}
                                     pickerFeedback={pickerFeedback}
@@ -776,11 +1031,11 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
                             formatValue={formatMinute}
                             initialValue={selectedMinute}
                             interval={1}
-                            limit={{ min: 0, max: 59 }}
+                            limit={minuteLimit}
                             LinearGradient={LinearGradient}
                             MaskedView={MaskedView}
                             maximumValue={59}
-                            onDurationChange={setSelectedMinute}
+                            onDurationChange={handleMinuteChange}
                             padNumbersWithZero={false}
                             padWithNItems={safePadWithNItems}
                             pickerFeedback={pickerFeedback}
@@ -914,8 +1169,10 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
             disableInfiniteScroll,
             formatMinute,
             selectedMinute,
+            minuteLimit,
             LinearGradient,
             MaskedView,
+            handleMinuteChange,
             safePadWithNItems,
             pickerFeedback,
             pickerGradientOverlayProps,
@@ -926,6 +1183,8 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
             totalDays,
             formatHour,
             selectedHour,
+            hourLimit,
+            handleHourChange,
             timeSeparator,
             formatYear,
             selectedYear,
