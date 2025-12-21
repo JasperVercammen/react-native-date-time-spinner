@@ -7,7 +7,7 @@ import { DateTimeSpinner } from "react-native-date-time-spinner";
 import type { CustomDateTimeSpinnerStyles } from "react-native-date-time-spinner";
 
 const minDate = new Date(2020, 0, 1);
-const maxDate = new Date(2030, 11, 31);
+const maxDate = new Date(2025, 11, 31, 11, 55);
 
 const formatDate = (date: Date) => {
     const year = date.getFullYear();
@@ -20,7 +20,7 @@ export default function App() {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [boundedDate, setBoundedDate] = useState(new Date(2024, 5, 15));
     const [selectedDateTime, setSelectedDateTime] = useState(
-        new Date(2004, 5, 15, 14, 30)
+        new Date(2025, 11, 15, 14, 30)
     );
 
     return (
