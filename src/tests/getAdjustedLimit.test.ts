@@ -20,7 +20,7 @@ describe("getAdjustedLimit", () => {
     });
 
     it("respects intervals when computing max", () => {
-        const result = getAdjustedLimit(undefined, 2025, 1, 1950);
+        const result = getAdjustedLimit(undefined, 76, 1, 1950);
 
         expect(result.max).toBe(2025);
         expect(result.min).toBe(1950);

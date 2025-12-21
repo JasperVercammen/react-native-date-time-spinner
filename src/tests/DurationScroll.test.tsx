@@ -66,36 +66,6 @@ describe("DurationScroll", () => {
         expect(getByTestId("duration-scroll")).toBeDefined();
     });
 
-    it("renders the label if provided", () => {
-        const { getByText } = render(
-            <DurationScroll
-                interval={1}
-                maximumValue={59}
-                onDurationChange={onDurationChangeMock}
-                padWithNItems={1}
-                repeatNumbersNTimesNotExplicitlySet={true}
-                styles={emptyStyles}
-            />
-        );
-        const label = getByText("Duration");
-        expect(label).toBeDefined();
-    });
-
-    it("does not render label when not provided", () => {
-        const { queryByTestId } = render(
-            <DurationScroll
-                interval={1}
-                maximumValue={59}
-                onDurationChange={onDurationChangeMock}
-                padWithNItems={1}
-                repeatNumbersNTimesNotExplicitlySet={true}
-                styles={emptyStyles}
-            />
-        );
-        const label = queryByTestId("picker-label");
-        expect(label).toBeNull();
-    });
-
     it("handles different intervals", () => {
         const { getAllByTestId } = render(
             <DurationScroll

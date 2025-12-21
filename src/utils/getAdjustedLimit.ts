@@ -39,7 +39,7 @@ export const getAdjustedLimit = (
     if (!limit || (limit.max === undefined && limit.min === undefined)) {
         return {
             max: maxValue,
-            min: 0,
+            min: startFrom,
         };
     }
 
