@@ -265,6 +265,63 @@ export default function Example() {
 | `MaskedView`                 | `any`                                                       | `undefined`                | Mask component to apply gradient as a mask.                                    |
 | `styles`                     | `CustomDateTimeSpinnerStyles`                               | `undefined`                | Style overrides (see below).                                                   |
 | `pickerContainerProps`       | `View` props                                                | `undefined`                | Extra props for outer container.                                               |
+| `accessibilityLabel`         | `string`                                                    | Auto-generated             | Accessibility label for screen readers. Auto-generated based on mode.          |
+| `accessibilityLabels`        | `object`                                                    | English defaults           | Custom labels for each column (see Accessibility section below).               |
+
+## ♿ Accessibility
+
+The date spinner is fully accessible and works with VoiceOver (iOS) and TalkBack (Android):
+
+-   Each column (day, month, year, hour, minute) is announced with clear labels
+-   Users can adjust values using the "Adjust Value" gesture (swipe up/down with VoiceOver)
+-   The container is announced as "Date picker" or "Date and time picker" based on mode
+-   You can provide a custom `accessibilityLabel` prop to override the default announcement
+
+**Example with custom accessibility label:**
+
+```tsx
+<DateTimeSpinner
+    accessibilityLabel="Select your birthday"
+    initialValue={new Date(1990, 0, 1)}
+    onDateChange={({ date }) => console.log(date)}
+/>
+```
+
+### Internationalization
+
+Use `accessibilityLabels` to provide column labels in any language:
+
+```tsx
+<DateTimeSpinner
+    mode="datetime"
+    accessibilityLabels={{
+        picker: "Sélecteur de date et heure",
+        date: "Date",
+        hour: "Heure",
+        minute: "Minute",
+        day: "Jour",
+        month: "Mois",
+        year: "Année",
+        hint: "Balayez vers le haut ou vers le bas pour ajuster",
+    }}
+    initialValue={new Date(2025, 5, 15, 14, 30)}
+    onDateChange={({ date }) => console.log(date)}
+/>
+```
+
+**Available label keys:**
+
+| Key      | Default (English)                       | Used in Mode            |
+| -------- | --------------------------------------- | ----------------------- |
+| `picker` | "Date picker" or "Date and time picker" | All modes               |
+| `day`    | "Day"                                   | `date`                  |
+| `month`  | "Month"                                 | `date`                  |
+| `year`   | "Year"                                  | `date`                  |
+| `date`   | "Date"                                  | `datetime`              |
+| `hour`   | "Hour"                                  | `datetime`              |
+| `minute` | "Minute"                                | `datetime`              |
+| `hint`   | "Swipe up or down to adjust"            | All modes (each column) |
+| `minute` | "Minute"                                | `datetime`              |
 
 ## 🎨 Styling
 

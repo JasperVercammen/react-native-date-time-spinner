@@ -16,6 +16,7 @@ import {
     getSafeInitialDateValue,
     type DateInput,
 } from "../../utils/getSafeInitialDateValue";
+import { useScreenReaderEnabled } from "../../utils/useScreenReaderEnabled";
 import DurationScroll from "../DurationScroll";
 import type { DurationScrollRef } from "../DurationScroll";
 
@@ -25,6 +26,8 @@ import type { DateTimeSpinnerProps, DateTimeSpinnerRef } from "./types";
 const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
     (props, ref) => {
         const {
+            accessibilityLabel,
+            accessibilityLabels,
             allowFontScaling = false,
             columnOrder = ["day", "month", "year"],
             dateTimeOrder = ["date", "hour", "minute"],
@@ -52,6 +55,8 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
             styles: customStyles,
             timeSeparator = ":",
         } = props;
+
+        const isScreenReaderEnabled = useScreenReaderEnabled();
 
         const now = useMemo(() => new Date(), []);
         const isDateTimeMode = mode === "datetime";
@@ -631,6 +636,59 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
             };
         }, [formatDateToParts, selectedDay, selectedMonth]);
 
+        const getAccessibilityValueText = useCallback(() => {
+            if (isDateTimeMode) {
+                const date = getDateFromIndex(selectedDateIndex);
+                const dateStr = formatDateLabel
+                    ? formatDateLabel(date)
+                    : `${date.getFullYear()}-${String(
+                          date.getMonth() + 1
+                      ).padStart(2, "0")}-${String(date.getDate()).padStart(
+                          2,
+                          "0"
+                      )}`;
+
+                const hourStr = padHourWithZero
+                    ? String(selectedHour).padStart(2, "0")
+                    : String(selectedHour);
+                const minuteStr = padMinuteWithZero
+                    ? String(selectedMinute).padStart(2, "0")
+                    : String(selectedMinute);
+
+                return `${dateStr} ${hourStr}:${minuteStr}`;
+            } else {
+                // Regular date mode
+                const dayStr = formatDay(selectedDay);
+                const monthStr = formatMonth(selectedMonth);
+                const yearStr = formatYear(selectedYear);
+
+                // Build date string based on column order
+                const parts: { [key: string]: string } = {
+                    day: dayStr,
+                    month: monthStr,
+                    year: yearStr,
+                };
+
+                return columnOrder.map((col) => parts[col]).join(" ");
+            }
+        }, [
+            isDateTimeMode,
+            getDateFromIndex,
+            selectedDateIndex,
+            formatDateLabel,
+            selectedHour,
+            selectedMinute,
+            padHourWithZero,
+            padMinuteWithZero,
+            selectedDay,
+            selectedMonth,
+            selectedYear,
+            formatDay,
+            formatMonth,
+            formatYear,
+            columnOrder,
+        ]);
+
         const daysInMonth = useMemo(
             () => getDaysInMonthForParts(selectedYear, selectedMonth),
             [selectedMonth, selectedYear]
@@ -943,6 +1001,12 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
                             <React.Fragment key="date">
                                 <DurationScroll
                                     ref={dateScrollRef}
+                                    accessibilityHint={
+                                        accessibilityLabels?.hint
+                                    }
+                                    accessibilityLabel={
+                                        accessibilityLabels?.date ?? "Date"
+                                    }
                                     allowFontScaling={allowFontScaling}
                                     decelerationRate={decelerationRate}
                                     disableInfiniteScroll={
@@ -951,6 +1015,9 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
                                     formatValue={formatDateColumnValue}
                                     initialValue={selectedDateIndex}
                                     interval={1}
+                                    isScreenReaderEnabled={
+                                        isScreenReaderEnabled
+                                    }
                                     limit={{ min: 0, max: totalDays - 1 }}
                                     LinearGradient={LinearGradient}
                                     MaskedView={MaskedView}
@@ -980,6 +1047,12 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
                             <React.Fragment key="hour-with-separator">
                                 <DurationScroll
                                     ref={hourScrollRef}
+                                    accessibilityHint={
+                                        accessibilityLabels?.hint
+                                    }
+                                    accessibilityLabel={
+                                        accessibilityLabels?.hour ?? "Hour"
+                                    }
                                     allowFontScaling={allowFontScaling}
                                     decelerationRate={decelerationRate}
                                     disableInfiniteScroll={
@@ -988,6 +1061,9 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
                                     formatValue={formatHour}
                                     initialValue={selectedHour}
                                     interval={1}
+                                    isScreenReaderEnabled={
+                                        isScreenReaderEnabled
+                                    }
                                     limit={hourLimit}
                                     LinearGradient={LinearGradient}
                                     MaskedView={MaskedView}
@@ -1010,6 +1086,8 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
                                 {insertSeparatorAfterHour ? (
                                     <View
                                         key="time-separator"
+                                        accessible={false}
+                                        importantForAccessibility="no"
                                         style={styles.timeSeparatorContainer}>
                                         <Text style={styles.timeSeparatorText}>
                                             {timeSeparator}
@@ -1025,12 +1103,17 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
                         <DurationScroll
                             key="minute"
                             ref={minuteScrollRef}
+                            accessibilityHint={accessibilityLabels?.hint}
+                            accessibilityLabel={
+                                accessibilityLabels?.minute ?? "Minute"
+                            }
                             allowFontScaling={allowFontScaling}
                             decelerationRate={decelerationRate}
                             disableInfiniteScroll={disableInfiniteScroll}
                             formatValue={formatMinute}
                             initialValue={selectedMinute}
                             interval={1}
+                            isScreenReaderEnabled={isScreenReaderEnabled}
                             limit={minuteLimit}
                             LinearGradient={LinearGradient}
                             MaskedView={MaskedView}
@@ -1064,12 +1147,17 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
                         <DurationScroll
                             key="day"
                             ref={dayScrollRef}
+                            accessibilityHint={accessibilityLabels?.hint}
+                            accessibilityLabel={
+                                accessibilityLabels?.day ?? "Day"
+                            }
                             allowFontScaling={allowFontScaling}
                             decelerationRate={decelerationRate}
                             disableInfiniteScroll={disableInfiniteScroll}
                             formatValue={formatDay}
                             initialValue={selectedDay}
                             interval={1}
+                            isScreenReaderEnabled={isScreenReaderEnabled}
                             limit={dayLimits}
                             LinearGradient={LinearGradient}
                             MaskedView={MaskedView}
@@ -1097,12 +1185,17 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
                         <DurationScroll
                             key="month"
                             ref={monthScrollRef}
+                            accessibilityHint={accessibilityLabels?.hint}
+                            accessibilityLabel={
+                                accessibilityLabels?.month ?? "Month"
+                            }
                             allowFontScaling={allowFontScaling}
                             decelerationRate={decelerationRate}
                             disableInfiniteScroll={disableInfiniteScroll}
                             formatValue={formatMonth}
                             initialValue={selectedMonth}
                             interval={1}
+                            isScreenReaderEnabled={isScreenReaderEnabled}
                             limit={monthLimits}
                             LinearGradient={LinearGradient}
                             MaskedView={MaskedView}
@@ -1130,12 +1223,15 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
                     <DurationScroll
                         key="year"
                         ref={yearScrollRef}
+                        accessibilityHint={accessibilityLabels?.hint}
+                        accessibilityLabel={accessibilityLabels?.year ?? "Year"}
                         allowFontScaling={allowFontScaling}
                         decelerationRate={decelerationRate}
                         disableInfiniteScroll={disableInfiniteScroll}
                         formatValue={formatYear}
                         initialValue={selectedYear}
                         interval={1}
+                        isScreenReaderEnabled={isScreenReaderEnabled}
                         limit={{
                             min: bounds.minimumYear,
                             max: bounds.maximumYear,
@@ -1164,11 +1260,19 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
             dateTimeOrder,
             styles,
             dateTimeSpacing,
+            accessibilityLabels?.hint,
+            accessibilityLabels?.minute,
+            accessibilityLabels?.date,
+            accessibilityLabels?.hour,
+            accessibilityLabels?.year,
+            accessibilityLabels?.day,
+            accessibilityLabels?.month,
             allowFontScaling,
             decelerationRate,
             disableInfiniteScroll,
             formatMinute,
             selectedMinute,
+            isScreenReaderEnabled,
             minuteLimit,
             LinearGradient,
             MaskedView,
@@ -1203,6 +1307,17 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
         return (
             <View
                 {...pickerContainerProps}
+                accessibilityLabel={
+                    accessibilityLabel ??
+                    accessibilityLabels?.picker ??
+                    (mode === "datetime"
+                        ? "Date and time picker"
+                        : "Date picker")
+                }
+                accessibilityValue={{
+                    text: getAccessibilityValueText(),
+                }}
+                accessible={true}
                 style={styles.pickerContainer}
                 testID="date-spinner">
                 {columns}

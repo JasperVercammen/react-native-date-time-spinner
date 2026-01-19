@@ -9,6 +9,8 @@ export interface DurationScrollProps {
     FlatList?: any;
     LinearGradient?: any;
     MaskedView?: any;
+    accessibilityHint?: string;
+    accessibilityLabel?: string;
     allowFontScaling?: boolean;
     decelerationRate?: number | "normal" | "fast";
     disableInfiniteScroll?: boolean;
@@ -16,6 +18,7 @@ export interface DurationScrollProps {
     initialValue?: number;
     interval: number;
     isDisabled?: boolean;
+    isScreenReaderEnabled?: boolean;
     limit?: Limit;
     maximumValue: number;
     onDurationChange: (value: number) => void;
