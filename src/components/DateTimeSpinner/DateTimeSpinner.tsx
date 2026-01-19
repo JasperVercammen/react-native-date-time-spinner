@@ -1185,6 +1185,7 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
                         <DurationScroll
                             key="month"
                             ref={monthScrollRef}
+                            accessibilityHint={accessibilityLabels?.hint}
                             accessibilityLabel={
                                 accessibilityLabels?.month ?? "Month"
                             }
