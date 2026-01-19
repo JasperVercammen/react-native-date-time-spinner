@@ -42,7 +42,6 @@ export default function App() {
                             })}
                             initialValue={selectedDate}
                             LinearGradient={LinearGradient}
-                            maxDate={subYears(new Date(), 18)}
                             onDateChange={({ date }) => setSelectedDate(date)}
                             pickerGradientOverlayProps={{
                                 locations: [0, 0.5, 0.5, 1],
@@ -81,52 +80,48 @@ export default function App() {
                         />
                         <View accessible={false} style={styles.selected}></View>
                     </View>
+                </View>
 
-                    <View style={styles.section}>
-                        <Text style={styles.label}>With min/max bounds</Text>
-                        <Text style={styles.value}>
-                            {formatDate(boundedDate)}
-                        </Text>
-                        <DateTimeSpinner
-                            initialValue={boundedDate}
-                            maxDate={maxDate}
-                            minDate={minDate}
-                            onDateChange={({ date }) => setBoundedDate(date)}
-                            styles={{
-                                pickerItem: styles.pickerItem,
-                                pickerLabel: styles.pickerLabel,
-                            }}
-                        />
-                        <Text style={styles.helper}>
-                            Allowed range: {formatDate(minDate)} –{" "}
-                            {formatDate(maxDate)}
-                        </Text>
-                    </View>
+                <View style={styles.section}>
+                    <Text style={styles.label}>With min/max bounds</Text>
+                    <Text style={styles.value}>{formatDate(boundedDate)}</Text>
+                    <DateTimeSpinner
+                        initialValue={boundedDate}
+                        maxDate={maxDate}
+                        minDate={minDate}
+                        onDateChange={({ date }) => setBoundedDate(date)}
+                        styles={{
+                            pickerItem: styles.pickerItem,
+                            pickerLabel: styles.pickerLabel,
+                        }}
+                    />
+                    <Text style={styles.helper}>
+                        Allowed range: {formatDate(minDate)} –{" "}
+                        {formatDate(maxDate)}
+                    </Text>
+                </View>
 
-                    <View style={styles.section}>
-                        <Text style={styles.label}>
-                            Custom formatting & order
-                        </Text>
-                        <Text style={styles.value}>
-                            {format(boundedDate, "do MMM yyyy")}
-                        </Text>
-                        <DateTimeSpinner
-                            columnOrder={["month", "day", "year"]}
-                            formatDateToParts={(date) => ({
-                                day: format(date, "do"),
-                                month: format(date, "MMM"),
-                                year: format(date, "''yy"),
-                            })}
-                            initialValue={boundedDate}
-                            maxDate={maxDate}
-                            minDate={minDate}
-                            onDateChange={({ date }) => setBoundedDate(date)}
-                            styles={{
-                                pickerItem: styles.pickerItem,
-                                pickerLabel: styles.pickerLabel,
-                            }}
-                        />
-                    </View>
+                <View style={styles.section}>
+                    <Text style={styles.label}>Custom formatting & order</Text>
+                    <Text style={styles.value}>
+                        {format(boundedDate, "do MMM yyyy")}
+                    </Text>
+                    <DateTimeSpinner
+                        columnOrder={["month", "day", "year"]}
+                        formatDateToParts={(date) => ({
+                            day: format(date, "do"),
+                            month: format(date, "MMM"),
+                            year: format(date, "''yy"),
+                        })}
+                        initialValue={boundedDate}
+                        maxDate={maxDate}
+                        minDate={minDate}
+                        onDateChange={({ date }) => setBoundedDate(date)}
+                        styles={{
+                            pickerItem: styles.pickerItem,
+                            pickerLabel: styles.pickerLabel,
+                        }}
+                    />
                 </View>
             </View>
         </ScrollView>

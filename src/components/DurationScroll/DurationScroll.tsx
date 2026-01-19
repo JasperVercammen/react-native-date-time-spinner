@@ -28,6 +28,8 @@ const keyExtractor = (item: any, index: number) => index.toString();
 const DurationScroll = forwardRef<DurationScrollRef, DurationScrollProps>(
     (props, ref) => {
         const {
+            accessibilityHint,
+            accessibilityLabel,
             allowFontScaling = false,
             decelerationRate = 0.88,
             disableInfiniteScroll = false,
@@ -183,8 +185,8 @@ const DurationScroll = forwardRef<DurationScrollRef, DurationScrollProps>(
                 return (
                     <View
                         key={item}
-                        accessibilityElementsHidden={isDisabled}
-                        importantForAccessibility={isDisabled ? "no" : "yes"}
+                        accessible={false}
+                        importantForAccessibility="no-hide-descendants"
                         style={styles.pickerItemContainer}
                         testID="picker-item">
                         <Text
@@ -359,15 +361,8 @@ const DurationScroll = forwardRef<DurationScrollRef, DurationScrollProps>(
             [styles.pickerItemContainer.height]
         );
 
-        useImperativeHandle(ref, () => ({
-            reset: (options) => {
-                latestDuration.current = initialValue;
-                flatListRef.current?.scrollToIndex({
-                    animated: options?.animated ?? false,
-                    index: safeInitialScrollIndex,
-                });
-            },
-            setValue: (value, options) => {
+        const setValue = useCallback(
+            (value: number, options?: { animated?: boolean }) => {
                 latestDuration.current = value;
                 flatListRef.current?.scrollToIndex({
                     animated: options?.animated ?? false,
@@ -384,21 +379,77 @@ const DurationScroll = forwardRef<DurationScrollRef, DurationScrollProps>(
                     ),
                 });
             },
+            [
+                clampIndex,
+                disableInfiniteScroll,
+                interval,
+                numberOfItems,
+                padWithNItems,
+                safeRepeatNumbersNTimes,
+                startFrom,
+            ]
+        );
+
+        useImperativeHandle(ref, () => ({
+            reset: (options) => {
+                latestDuration.current = initialValue;
+                flatListRef.current?.scrollToIndex({
+                    animated: options?.animated ?? false,
+                    index: safeInitialScrollIndex,
+                });
+            },
+            setValue: setValue,
             latestDuration: latestDuration,
         }));
 
         const renderContent = useMemo(() => {
             return (
-                <>
+                <View
+                    accessibilityActions={[
+                        { name: "increment" },
+                        { name: "decrement" },
+                    ]}
+                    accessibilityHint={
+                        accessibilityHint ?? "Swipe up or down to adjust"
+                    }
+                    accessibilityLabel={accessibilityLabel}
+                    accessibilityRole="adjustable"
+                    accessibilityValue={{
+                        text: formatValue
+                            ? formatValue(latestDuration.current)
+                            : String(latestDuration.current),
+                    }}
+                    accessible={true}
+                    onAccessibilityAction={(event: {
+                        nativeEvent: { actionName: string };
+                    }) => {
+                        if (event.nativeEvent.actionName === "increment") {
+                            const newValue = Math.min(
+                                latestDuration.current + interval,
+                                adjustedLimited.max
+                            );
+                            setValue(newValue, { animated: true });
+                        } else if (
+                            event.nativeEvent.actionName === "decrement"
+                        ) {
+                            const newValue = Math.max(
+                                latestDuration.current - interval,
+                                adjustedLimited.min
+                            );
+                            setValue(newValue, { animated: true });
+                        }
+                    }}>
                     <FlatList
                         key={flatListRenderKey}
                         ref={flatListRef}
+                        accessible={false}
                         contentContainerStyle={
                             styles.durationScrollFlatListContentContainer
                         }
                         data={numbersForFlatList}
                         decelerationRate={decelerationRate}
                         getItemLayout={getItemLayout}
+                        importantForAccessibility="no-hide-descendants"
                         initialScrollIndex={safeInitialScrollIndex}
                         keyExtractor={keyExtractor}
                         nestedScrollEnabled
@@ -407,11 +458,6 @@ const DurationScroll = forwardRef<DurationScrollRef, DurationScrollProps>(
                         scrollEnabled={!isDisabled}
                         scrollEventThrottle={16}
                         showsVerticalScrollIndicator={false}
-                        snapToAlignment="start"
-                        // used in place of snapToInterval due to bug on Android
-                        snapToOffsets={[
-                            ...Array(numbersForFlatList.length),
-                        ].map((_, i) => i * styles.pickerItemContainer.height)}
                         style={styles.durationScrollFlatList}
                         testID="duration-scroll-flatlist"
                         viewabilityConfigCallbackPairs={
@@ -420,29 +466,41 @@ const DurationScroll = forwardRef<DurationScrollRef, DurationScrollProps>(
                         windowSize={
                             numberOfItemsToShow > 10 ? numberOfItemsToShow : 10
                         }
+                        snapToAlignment="start"
+                        // used in place of snapToInterval due to bug on Android
+                        snapToOffsets={[
+                            ...Array(numbersForFlatList.length),
+                        ].map((_, i) => i * styles.pickerItemContainer.height)}
                     />
                     <View
                         pointerEvents="none"
                         style={styles.pickerLabelContainer}
                     />
-                </>
+                </View>
             );
         }, [
             FlatList,
+            accessibilityHint,
+            accessibilityLabel,
+            adjustedLimited.max,
+            adjustedLimited.min,
+            decelerationRate,
             flatListRenderKey,
+            formatValue,
             getItemLayout,
-            safeInitialScrollIndex,
+            interval,
             isDisabled,
             numberOfItemsToShow,
             numbersForFlatList,
             onMomentumScrollEnd,
             renderItem,
+            safeInitialScrollIndex,
+            setValue,
             styles.durationScrollFlatList,
             styles.durationScrollFlatListContentContainer,
             styles.pickerItemContainer.height,
             styles.pickerLabelContainer,
             viewabilityConfigCallbackPairs,
-            decelerationRate,
         ]);
 
         const renderLinearGradient = useMemo(() => {

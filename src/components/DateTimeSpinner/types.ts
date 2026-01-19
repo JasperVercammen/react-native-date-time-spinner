@@ -35,6 +35,17 @@ export interface DateTimeSpinnerRef {
 export type DateTimeSpinnerProps = {
     LinearGradient?: any;
     MaskedView?: any;
+    accessibilityLabel?: string;
+    accessibilityLabels?: {
+        date?: string;
+        day?: string;
+        hint?: string;
+        hour?: string;
+        minute?: string;
+        month?: string;
+        picker?: string;
+        year?: string;
+    };
     allowFontScaling?: boolean;
     columnOrder?: Array<"day" | "month" | "year">;
     dateTimeOrder?: Array<"date" | "hour" | "minute">;

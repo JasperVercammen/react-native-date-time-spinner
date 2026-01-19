@@ -9,6 +9,8 @@ export interface DurationScrollProps {
     FlatList?: any;
     LinearGradient?: any;
     MaskedView?: any;
+    accessibilityHint?: string;
+    accessibilityLabel?: string;
     allowFontScaling?: boolean;
     decelerationRate?: number | "normal" | "fast";
     disableInfiniteScroll?: boolean;
