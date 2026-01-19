@@ -16,6 +16,7 @@ import {
     getSafeInitialDateValue,
     type DateInput,
 } from "../../utils/getSafeInitialDateValue";
+import { useScreenReaderEnabled } from "../../utils/useScreenReaderEnabled";
 import DurationScroll from "../DurationScroll";
 import type { DurationScrollRef } from "../DurationScroll";
 
@@ -54,6 +55,8 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
             styles: customStyles,
             timeSeparator = ":",
         } = props;
+
+        const isScreenReaderEnabled = useScreenReaderEnabled();
 
         const now = useMemo(() => new Date(), []);
         const isDateTimeMode = mode === "datetime";
@@ -633,6 +636,59 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
             };
         }, [formatDateToParts, selectedDay, selectedMonth]);
 
+        const getAccessibilityValueText = useCallback(() => {
+            if (isDateTimeMode) {
+                const date = getDateFromIndex(selectedDateIndex);
+                const dateStr = formatDateLabel
+                    ? formatDateLabel(date)
+                    : `${date.getFullYear()}-${String(
+                          date.getMonth() + 1
+                      ).padStart(2, "0")}-${String(date.getDate()).padStart(
+                          2,
+                          "0"
+                      )}`;
+
+                const hourStr = padHourWithZero
+                    ? String(selectedHour).padStart(2, "0")
+                    : String(selectedHour);
+                const minuteStr = padMinuteWithZero
+                    ? String(selectedMinute).padStart(2, "0")
+                    : String(selectedMinute);
+
+                return `${dateStr} ${hourStr}:${minuteStr}`;
+            } else {
+                // Regular date mode
+                const dayStr = formatDay(selectedDay);
+                const monthStr = formatMonth(selectedMonth);
+                const yearStr = formatYear(selectedYear);
+
+                // Build date string based on column order
+                const parts: { [key: string]: string } = {
+                    day: dayStr,
+                    month: monthStr,
+                    year: yearStr,
+                };
+
+                return columnOrder.map((col) => parts[col]).join(" ");
+            }
+        }, [
+            isDateTimeMode,
+            getDateFromIndex,
+            selectedDateIndex,
+            formatDateLabel,
+            selectedHour,
+            selectedMinute,
+            padHourWithZero,
+            padMinuteWithZero,
+            selectedDay,
+            selectedMonth,
+            selectedYear,
+            formatDay,
+            formatMonth,
+            formatYear,
+            columnOrder,
+        ]);
+
         const daysInMonth = useMemo(
             () => getDaysInMonthForParts(selectedYear, selectedMonth),
             [selectedMonth, selectedYear]
@@ -959,6 +1015,9 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
                                     formatValue={formatDateColumnValue}
                                     initialValue={selectedDateIndex}
                                     interval={1}
+                                    isScreenReaderEnabled={
+                                        isScreenReaderEnabled
+                                    }
                                     limit={{ min: 0, max: totalDays - 1 }}
                                     LinearGradient={LinearGradient}
                                     MaskedView={MaskedView}
@@ -1002,6 +1061,9 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
                                     formatValue={formatHour}
                                     initialValue={selectedHour}
                                     interval={1}
+                                    isScreenReaderEnabled={
+                                        isScreenReaderEnabled
+                                    }
                                     limit={hourLimit}
                                     LinearGradient={LinearGradient}
                                     MaskedView={MaskedView}
@@ -1051,6 +1113,7 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
                             formatValue={formatMinute}
                             initialValue={selectedMinute}
                             interval={1}
+                            isScreenReaderEnabled={isScreenReaderEnabled}
                             limit={minuteLimit}
                             LinearGradient={LinearGradient}
                             MaskedView={MaskedView}
@@ -1094,6 +1157,7 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
                             formatValue={formatDay}
                             initialValue={selectedDay}
                             interval={1}
+                            isScreenReaderEnabled={isScreenReaderEnabled}
                             limit={dayLimits}
                             LinearGradient={LinearGradient}
                             MaskedView={MaskedView}
@@ -1130,6 +1194,7 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
                             formatValue={formatMonth}
                             initialValue={selectedMonth}
                             interval={1}
+                            isScreenReaderEnabled={isScreenReaderEnabled}
                             limit={monthLimits}
                             LinearGradient={LinearGradient}
                             MaskedView={MaskedView}
@@ -1165,6 +1230,7 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
                         formatValue={formatYear}
                         initialValue={selectedYear}
                         interval={1}
+                        isScreenReaderEnabled={isScreenReaderEnabled}
                         limit={{
                             min: bounds.minimumYear,
                             max: bounds.maximumYear,
@@ -1205,6 +1271,7 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
             disableInfiniteScroll,
             formatMinute,
             selectedMinute,
+            isScreenReaderEnabled,
             minuteLimit,
             LinearGradient,
             MaskedView,
@@ -1246,6 +1313,9 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
                         ? "Date and time picker"
                         : "Date picker")
                 }
+                accessibilityValue={{
+                    text: getAccessibilityValueText(),
+                }}
                 accessible={true}
                 style={styles.pickerContainer}
                 testID="date-spinner">

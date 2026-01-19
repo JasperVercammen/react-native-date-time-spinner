@@ -18,6 +18,7 @@ export interface DurationScrollProps {
     initialValue?: number;
     interval: number;
     isDisabled?: boolean;
+    isScreenReaderEnabled?: boolean;
     limit?: Limit;
     maximumValue: number;
     onDurationChange: (value: number) => void;

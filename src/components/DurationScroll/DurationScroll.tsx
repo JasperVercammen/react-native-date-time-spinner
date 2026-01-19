@@ -8,7 +8,12 @@ import React, {
     useMemo,
 } from "react";
 
-import { View, Text, FlatList as RNFlatList } from "react-native";
+import {
+    View,
+    Text,
+    FlatList as RNFlatList,
+    AccessibilityInfo,
+} from "react-native";
 import type {
     ViewabilityConfigCallbackPairs,
     FlatListProps,
@@ -36,6 +41,7 @@ const DurationScroll = forwardRef<DurationScrollRef, DurationScrollProps>(
             FlatList = RNFlatList,
             interval,
             isDisabled,
+            isScreenReaderEnabled = false,
             formatValue,
             limit,
             LinearGradient,
@@ -185,8 +191,8 @@ const DurationScroll = forwardRef<DurationScrollRef, DurationScrollProps>(
                 return (
                     <View
                         key={item}
-                        accessible={false}
-                        importantForAccessibility="no-hide-descendants"
+                        accessibilityElementsHidden={isDisabled}
+                        importantForAccessibility={isDisabled ? "no" : "yes"}
                         style={styles.pickerItemContainer}
                         testID="picker-item">
                         <Text
@@ -409,9 +415,7 @@ const DurationScroll = forwardRef<DurationScrollRef, DurationScrollProps>(
                         { name: "increment" },
                         { name: "decrement" },
                     ]}
-                    accessibilityHint={
-                        accessibilityHint ?? "Swipe up or down to adjust"
-                    }
+                    accessibilityHint={accessibilityHint}
                     accessibilityLabel={accessibilityLabel}
                     accessibilityRole="adjustable"
                     accessibilityValue={{
@@ -429,6 +433,18 @@ const DurationScroll = forwardRef<DurationScrollRef, DurationScrollProps>(
                                 adjustedLimited.max
                             );
                             setValue(newValue, { animated: true });
+                            latestDuration.current = newValue;
+
+                            // Announce the new value to screen readers
+                            const announcement = formatValue
+                                ? formatValue(newValue)
+                                : String(newValue);
+                            AccessibilityInfo.announceForAccessibilityWithOptions(
+                                announcement,
+                                {
+                                    queue: false,
+                                }
+                            );
                         } else if (
                             event.nativeEvent.actionName === "decrement"
                         ) {
@@ -437,19 +453,32 @@ const DurationScroll = forwardRef<DurationScrollRef, DurationScrollProps>(
                                 adjustedLimited.min
                             );
                             setValue(newValue, { animated: true });
+                            latestDuration.current = newValue;
+
+                            // Announce the new value to screen readers
+                            const announcement = formatValue
+                                ? formatValue(newValue)
+                                : String(newValue);
+                            AccessibilityInfo.announceForAccessibility(
+                                announcement
+                            );
                         }
                     }}>
                     <FlatList
                         key={flatListRenderKey}
                         ref={flatListRef}
-                        accessible={false}
+                        accessible={isScreenReaderEnabled ? false : undefined}
                         contentContainerStyle={
                             styles.durationScrollFlatListContentContainer
                         }
                         data={numbersForFlatList}
                         decelerationRate={decelerationRate}
                         getItemLayout={getItemLayout}
-                        importantForAccessibility="no-hide-descendants"
+                        importantForAccessibility={
+                            isScreenReaderEnabled
+                                ? "no-hide-descendants"
+                                : undefined
+                        }
                         initialScrollIndex={safeInitialScrollIndex}
                         keyExtractor={keyExtractor}
                         nestedScrollEnabled
@@ -490,6 +519,7 @@ const DurationScroll = forwardRef<DurationScrollRef, DurationScrollProps>(
             getItemLayout,
             interval,
             isDisabled,
+            isScreenReaderEnabled,
             numberOfItemsToShow,
             numbersForFlatList,
             onMomentumScrollEnd,
