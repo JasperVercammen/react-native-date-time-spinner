@@ -8,7 +8,7 @@ import React, {
     useState,
 } from "react";
 
-import { View, Text } from "react-native";
+import { View, Text, Platform } from "react-native";
 
 import {
     getConstrainedDateParts,
@@ -1316,7 +1316,7 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
                 accessibilityValue={{
                     text: getAccessibilityValueText(),
                 }}
-                accessible={true}
+                accessible={Platform.OS === "android"}
                 style={styles.pickerContainer}
                 testID="date-spinner">
                 {columns}
