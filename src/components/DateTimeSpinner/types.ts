@@ -80,6 +80,7 @@ export type DateTimeSpinnerProps = {
     pickerFeedback?: () => void | Promise<void>;
     pickerGradientOverlayProps?: Partial<LinearGradientProps>;
     repeatNumbersNTimes?: number;
+    stabilizeWidth?: boolean;
     styles?: CustomDateTimeSpinnerStyles;
     timeSeparator?: string;
 };

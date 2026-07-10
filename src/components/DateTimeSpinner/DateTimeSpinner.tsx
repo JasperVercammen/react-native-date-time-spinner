@@ -52,6 +52,7 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
             pickerFeedback,
             pickerGradientOverlayProps,
             repeatNumbersNTimes = 3,
+            stabilizeWidth = true,
             styles: customStyles,
             timeSeparator = ":",
         } = props;
@@ -1033,6 +1034,7 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
                                     repeatNumbersNTimesNotExplicitlySet={
                                         props.repeatNumbersNTimes === undefined
                                     }
+                                    stabilizeWidth={stabilizeWidth}
                                     startFrom={0}
                                     styles={styles}
                                     testID="duration-scroll-date"
@@ -1079,6 +1081,7 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
                                     repeatNumbersNTimesNotExplicitlySet={
                                         props.repeatNumbersNTimes === undefined
                                     }
+                                    stabilizeWidth={stabilizeWidth}
                                     startFrom={0}
                                     styles={styles}
                                     testID="duration-scroll-hour"
@@ -1129,6 +1132,7 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
                             repeatNumbersNTimesNotExplicitlySet={
                                 props.repeatNumbersNTimes === undefined
                             }
+                            stabilizeWidth={stabilizeWidth}
                             startFrom={0}
                             styles={styles}
                             testID="duration-scroll-minute"
@@ -1173,6 +1177,7 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
                             repeatNumbersNTimesNotExplicitlySet={
                                 props.repeatNumbersNTimes === undefined
                             }
+                            stabilizeWidth={stabilizeWidth}
                             startFrom={dayLimits.min}
                             styles={styles}
                             testID="duration-scroll-day"
@@ -1211,6 +1216,7 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
                             repeatNumbersNTimesNotExplicitlySet={
                                 props.repeatNumbersNTimes === undefined
                             }
+                            stabilizeWidth={stabilizeWidth}
                             startFrom={monthLimits.min}
                             styles={styles}
                             testID="duration-scroll-month"
@@ -1248,6 +1254,7 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
                         repeatNumbersNTimesNotExplicitlySet={
                             props.repeatNumbersNTimes === undefined
                         }
+                        stabilizeWidth={stabilizeWidth}
                         startFrom={bounds.minimumYear}
                         styles={styles}
                         testID="duration-scroll-year"
@@ -1282,6 +1289,7 @@ const DateTimeSpinner = forwardRef<DateTimeSpinnerRef, DateTimeSpinnerProps>(
             pickerGradientOverlayProps,
             repeatNumbersNTimes,
             props.repeatNumbersNTimes,
+            stabilizeWidth,
             formatDateColumnValue,
             selectedDateIndex,
             totalDays,

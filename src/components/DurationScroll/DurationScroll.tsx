@@ -13,6 +13,7 @@ import {
     Text,
     FlatList as RNFlatList,
     AccessibilityInfo,
+    StyleSheet,
 } from "react-native";
 import type {
     ViewabilityConfigCallbackPairs,
@@ -54,6 +55,7 @@ const DurationScroll = forwardRef<DurationScrollRef, DurationScrollProps>(
             pickerGradientOverlayProps,
             repeatNumbersNTimes = 1,
             repeatNumbersNTimesNotExplicitlySet,
+            stabilizeWidth = true,
             startFrom = 0,
             initialValue = startFrom,
             styles,
@@ -585,6 +587,62 @@ const DurationScroll = forwardRef<DurationScrollRef, DurationScrollProps>(
             styles.pickerGradientOverlay,
         ]);
 
+        // Reserve the column's width for its widest label up front. FlatList only
+        // mounts a window of rows on the first commit, so without this the column
+        // sizes to whatever rows happen to be mounted and then grows (shoving the
+        // neighbouring columns aside) once a longer label — e.g. a full month name —
+        // scrolls into view. This hidden, zero-height stack of every distinct label
+        // contributes intrinsic width but no height, so the column locks to its final
+        // width from frame one. Numeric columns are uniform-width, so it's a no-op there.
+        const widthSizer = useMemo(() => {
+            if (!stabilizeWidth) {
+                return null;
+            }
+
+            const labels = new Set<string>();
+            for (const item of numbersForFlatList) {
+                const intItem = parseInt(item);
+                if (item === "" || Number.isNaN(intItem)) {
+                    continue;
+                }
+                labels.add(formatValue ? formatValue(intItem) : item);
+            }
+
+            if (labels.size === 0) {
+                return null;
+            }
+
+            return (
+                <View
+                    accessibilityElementsHidden
+                    importantForAccessibility="no-hide-descendants"
+                    pointerEvents="none"
+                    style={localStyles.widthSizer}
+                    testID="width-sizer">
+                    {Array.from(labels).map((label, index) => (
+                        <View
+                            key={index}
+                            style={styles.pickerItemContainer}
+                            testID="width-sizer-item">
+                            <Text
+                                allowFontScaling={allowFontScaling}
+                                numberOfLines={1}
+                                style={styles.pickerItem}>
+                                {label}
+                            </Text>
+                        </View>
+                    ))}
+                </View>
+            );
+        }, [
+            allowFontScaling,
+            formatValue,
+            numbersForFlatList,
+            stabilizeWidth,
+            styles.pickerItem,
+            styles.pickerItemContainer,
+        ]);
+
         return (
             <View
                 pointerEvents={isDisabled ? "none" : undefined}
@@ -598,6 +656,7 @@ const DurationScroll = forwardRef<DurationScrollRef, DurationScrollProps>(
                     isDisabled && styles.disabledPickerContainer,
                 ]}
                 testID={testID}>
+                {widthSizer}
                 {MaskedView ? (
                     <MaskedView
                         maskElement={renderLinearGradient}
@@ -614,5 +673,14 @@ const DurationScroll = forwardRef<DurationScrollRef, DurationScrollProps>(
         );
     }
 );
+
+const localStyles = StyleSheet.create({
+    // Height 0 + overflow hidden: the stacked labels are clipped away visually and
+    // take no vertical space, but still establish the column's intrinsic width.
+    widthSizer: {
+        height: 0,
+        overflow: "hidden",
+    },
+});
 
 export default React.memo(DurationScroll);
