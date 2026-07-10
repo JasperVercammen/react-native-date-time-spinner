@@ -28,6 +28,7 @@ export interface DurationScrollProps {
     pickerGradientOverlayProps?: Partial<LinearGradientProps>;
     repeatNumbersNTimes?: number;
     repeatNumbersNTimesNotExplicitlySet: boolean;
+    stabilizeWidth?: boolean;
     startFrom?: number;
     styles: ReturnType<typeof generateStyles>;
     testID?: string;

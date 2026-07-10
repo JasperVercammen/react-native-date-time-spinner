@@ -128,4 +128,71 @@ describe("DurationScroll", () => {
         const component = getByTestId("duration-scroll");
         expect(component).toBeDefined();
     });
+
+    describe("width stabilization", () => {
+        const monthNames = [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+        ];
+        const formatMonth = (value: number) => monthNames[value - 1];
+
+        it("renders one hidden sizer item per distinct label by default", () => {
+            const { getAllByTestId, getByTestId } = render(
+                <DurationScroll
+                    formatValue={formatMonth}
+                    interval={1}
+                    maximumValue={12}
+                    onDurationChange={onDurationChangeMock}
+                    padWithNItems={1}
+                    repeatNumbersNTimes={5}
+                    repeatNumbersNTimesNotExplicitlySet={false}
+                    startFrom={1}
+                    styles={emptyStyles}
+                    testID="duration-scroll"
+                />
+            );
+
+            // The sizer is hidden from accessibility, so opt into hidden elements.
+            expect(
+                getByTestId("width-sizer", { includeHiddenElements: true })
+            ).toBeDefined();
+            // 12 distinct months, deduped even though the list repeats them 5x.
+            expect(
+                getAllByTestId("width-sizer-item", {
+                    includeHiddenElements: true,
+                })
+            ).toHaveLength(12);
+        });
+
+        it("omits the sizer when stabilizeWidth is false", () => {
+            const { queryByTestId } = render(
+                <DurationScroll
+                    formatValue={formatMonth}
+                    interval={1}
+                    maximumValue={12}
+                    onDurationChange={onDurationChangeMock}
+                    padWithNItems={1}
+                    repeatNumbersNTimesNotExplicitlySet={false}
+                    stabilizeWidth={false}
+                    startFrom={1}
+                    styles={emptyStyles}
+                    testID="duration-scroll"
+                />
+            );
+
+            expect(
+                queryByTestId("width-sizer", { includeHiddenElements: true })
+            ).toBeNull();
+        });
+    });
 });
